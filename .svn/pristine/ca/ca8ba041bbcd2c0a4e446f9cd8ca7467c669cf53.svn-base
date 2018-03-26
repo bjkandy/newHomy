@@ -1,0 +1,25 @@
+<link rel="stylesheet" type="text/css" href="css/table.css"/>
+<link rel="stylesheet" href="css/common.css" />
+<!--对表单进行操作-->
+<div class="from_handle">
+	<a href="#" style="display: none;"><b></b>111</a>
+	<a href="#"><b></b>打款</a>
+	<a href="#" style="display: none;"><b></b>查询</a>
+	<a href="#" style="display: none;"><b></b>重置</a>
+</div>
+<!--表单-->
+<table id="cs_table" class="datatable"></table>
+<script src="js/table.js" type="text/javascript" charset="utf-8"></script>
+<script>
+	var data = [];
+    for(var i=0;i<20;i++){
+        data[i] = {id:i+1,biahao:"11",qyid:"哒哒",name:"50",time:"2017-4-17 10:10:10",dingdan:"未提现"};
+    }
+    var cs = new table({
+        "tableId":"cs_table",    //必须
+        "headers":["","提现编号","商户名称","提现金额","申请时间","提现状态"],   //必须
+        "data":data,        //必须
+        "displayNum": 6,    //必须   默认 10
+        "groupDataNum":9  //可选    默认 10
+	});	
+</script>

@@ -1,0 +1,63 @@
+package com.hanson.service.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.hanson.common.util.Page;
+import com.hanson.mapper.YuyueMapper;
+import com.hanson.model.ServiceProject;
+import com.hanson.service.YuyueService;
+
+@Service
+public class YuyueServiceImpl implements YuyueService{
+	
+	@Autowired
+	private YuyueMapper yuyueMapper;
+	
+	@Override
+	public List<ServiceProject> getYuyue( ) {
+		return yuyueMapper.getYuyue();
+	}
+	
+	@Override
+    public ServiceProject Selectprojectname(String projectname){
+    	return yuyueMapper.Selectprojectname(projectname);
+    }
+	
+	@Override
+	public Integer saveyuepaiProject(ServiceProject model){
+	    return 	yuyueMapper.saveyuepaiProject(model);
+	}
+	
+    @Override	
+	public Integer  ReviseServiceProject(ServiceProject model){
+		return yuyueMapper.ReviseServiceProject(model);
+	}
+	@Override
+	public Page<Map<String, Object>> FindyupaiProducts(Page<Map<String, Object>> page, Map<String, Object> map) {
+		map.put("BEGIN_ROW", (page.getPageNo()-1) * page.getPageSize());
+		map.put("PAGE_SIZE", page.getPageSize());
+		/*map.put("ORDER_BY_MENU", page.getOrderBy());
+		map.put("ORDER_BY_DESC", page.getOrder());*/
+	    int totalCount=yuyueMapper.Selectcountpages(map);
+	    page.setTotalCount(Long.valueOf(totalCount));
+	    if(totalCount >0){
+	    	page.setResult(yuyueMapper.search(map));	    	
+	    }
+		return page;
+	}
+	
+	@Override
+	public Integer DeleteServiceProject(Long id){
+		return yuyueMapper.DeleteServiceProject(id);
+	}
+	
+	@Override
+	public ServiceProject FindServiceProject(Long id){
+		return yuyueMapper.FindServiceProject(id);
+	}
+
+}

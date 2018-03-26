@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hanson.mapper.ProductinfoMapper">
+	<insert id="saveProductinfo" parameterType="com.hanson.model.Productinfo" useGeneratedKeys="true" keyProperty="id">
+            INSERT INTO pdt_productinfo  
+            <trim prefix="(" suffix=")" suffixOverrides=",">  
+            	<if test="productid != null">  
+                    `productid`,  
+                </if>
+                <if test="img1 != null">  
+                    `img1`,  
+                </if>
+                <if test="img2 != null">  
+                    `img2`,  
+                </if>
+                <if test="img3 != null">  
+                    `img3`,  
+                </if>
+                <if test="img4 != null">  
+                    `img4`,  
+                </if>
+                <if test="img5 != null">  
+                    `img5`,  
+                </if>
+                <if test="backimg != null">  
+                    `backimg`,  
+                </if>
+                <if test="material != null">  
+                    `material`,  
+                </if>
+                <if test="style != null">  
+                    `style`,  
+                </if>
+                <if test="shape != null">  
+                    `shape`,  
+                </if>
+                <if test="pageNum != null">  
+                    `pageNum`,  
+                </if>
+                <if test="picNum != null">  
+                    `picNum`,  
+                </if>
+                <if test="series != null">  
+                    `series`,  
+                </if>
+                <if test="seriesDescribe != null">  
+                    `seriesDescribe`,  
+                </if>
+                <if test="templateImage != null">  
+                    `templateImage`,  
+                </if>
+                <if test="type != null">  
+                    `type`,  
+                </if>
+                
+            </trim>  
+            <trim prefix="values (" suffix=")" suffixOverrides=","> 
+            	<if test="productid != null">  
+                    #{productid,jdbcType=INTEGER},  
+                </if>
+            	<if test="img1 != null">  
+                    #{img1,jdbcType=VARCHAR},  
+                </if>  
+                <if test="img2 != null">  
+                    #{img2,jdbcType=VARCHAR},  
+                </if>
+                <if test="img3 != null">  
+                    #{img3,jdbcType=VARCHAR},  
+                </if>
+                <if test="img4 != null">  
+                    #{img4,jdbcType=VARCHAR},  
+                </if>
+                <if test="img5 != null">  
+                    #{img5,jdbcType=VARCHAR},  
+                </if>
+                <if test="backimg != null">  
+                    #{backimg,jdbcType=VARCHAR},  
+                </if>
+                <if test="material != null">  
+                    #{material,jdbcType=VARCHAR},  
+                </if>
+                <if test="style != null">  
+                    #{style,jdbcType=VARCHAR},  
+                </if>
+                <if test="shape != null">  
+                    #{shape,jdbcType=INTEGER}, 
+                </if>
+                <if test="pageNum != null">  
+                    #{pageNum,jdbcType=VARCHAR}, 
+                </if>
+                <if test="picNum != null">  
+                    #{picNum,jdbcType=INTEGER}, 
+                </if>
+                <if test="series != null">  
+                    #{series,jdbcType=VARCHAR}, 
+                </if>
+                <if test="seriesDescribe != null">  
+                    #{seriesDescribe,jdbcType=VARCHAR}, 
+                </if>
+                <if test="templateImage != null">  
+                    #{templateImage,jdbcType=VARCHAR}, 
+                </if>
+                <if test="type != null">  
+                    #{type,jdbcType=INTEGER}, 
+                </if>
+                
+            </trim>  
+    </insert>
+    
+    <!-- 根据产品id查询产品附加信息 -->
+    <select id="findProductinfoByPId" parameterType="com.hanson.model.Productinfo" resultType="com.hanson.model.Productinfo">
+    	select * from pdt_productinfo t where t.productid = #{productid}
+    </select>
+    
+    <!-- 修改产品附加信息 -->
+	<update id="updateProductinfo" parameterType="com.hanson.model.Productinfo">
+		 update pdt_productinfo
+		 <trim prefix="set" suffixOverrides=",">
+		 		<if test="productid != null"> 
+            		productid = #{productid},  
+                </if>  
+                <if test="img1 != null">  
+                   img1=  #{img1},  
+                </if>  
+                <if test="img2 != null">  
+                   img2 = #{img2},
+                </if>  
+                <if test="img3 != null">  
+                    img3 = #{img3},
+                </if>  
+                <if test="img4 != null">  
+                    img4 = #{img4}, 
+                </if>  
+                <if test="img5 != null">  
+                    img5 = #{img5}, 
+                </if>  
+                <if test="backimg != null">  
+                    backimg = #{backimg}, 
+                </if>  
+                <if test="material != null">  
+                     material = #{material}, 
+                </if>  
+                <if test="style != null">  
+                     style = #{style},  
+                </if>  
+                <if test="shape != null">  
+                    shape = #{shape}, 
+                </if> 
+                <if test="pageNum != null">  
+                    pageNum = #{pageNum}, 
+                </if>
+                <if test="picNum != null">  
+                    picNum = #{picNum}, 
+                </if>
+                <if test="series != null">  
+                    series = #{series}, 
+                </if>
+                <if test="seriesDescribe != null">  
+                    seriesDescribe = #{seriesDescribe}, 
+                </if>
+                <if test="templateImage != null">  
+                    templateImage = #{templateImage}, 
+                </if>
+                <if test="type != null">  
+                    type = #{type}, 
+                </if>
+                 
+		 </trim>
+		 WHERE id=#{id}
+	</update>
+</mapper>

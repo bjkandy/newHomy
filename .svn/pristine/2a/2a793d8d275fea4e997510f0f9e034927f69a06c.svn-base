@@ -1,0 +1,576 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hanson.mapper.OrderMapper">
+	<resultMap id="orderResultMap" type="com.hanson.model.odr.Order">   
+        <id property="id" column="id"/>  
+        <result property="orderid" column="orderid"/>  
+        <result property="qyid" column="qyid"/>
+        <result property="prometerid" column="prometerid"/>
+        <result property="merchantid" column="merchantid"/>
+        <result property="distributorid" column="distributorid"/>
+        <result property="cuname" column="cuname"/>
+        <result property="totalprice" column="totalprice"/> 
+        <result property="productotallprice" column="productotallprice"/> 
+        <result property="orderstatus" column="orderstatus"/> 
+        <result property="paystatus" column="paystatus"/>     
+        <result property="createdate" column="createdate"/>     
+        <result property="paytype" column="paytype"/>     
+       	<result property="txStatus" column="txStatus"/> 
+       	<result property="merchanttxid" column="merchanttxid"/> 
+       	
+       	<result property="fee" column="fee"/>    
+        <collection property="orderdetails"  column="orderid"  ofType="com.hanson.model.odr.Orderdetail">    
+        	<id property="id" column="oid"/> 
+            <result property="orderid" column="orderid"/>    
+            <result property="number" column="number"/> 
+        </collection>    
+     </resultMap>  
+	
+	<select id="getUniqueBy" resultMap="orderResultMap" parameterType="com.hanson.model.odr.Order">
+		SELECT
+			o.id,
+			o.qyid,
+			o.prometerid,
+			o.merchantid, 
+			o.distributorid,
+			o.orderid,
+			o.cuname,
+			o.totalprice,
+			o.productotallprice,
+			od.number,
+			o.orderstatus,
+			o.paystatus,
+			o.createdate,
+			o.paytype,
+			o.fee,
+			ifnull((select status from odr_txjs tx where tx.id = o.txid), 0) as txStatus
+		FROM
+			odr_order o
+		INNER JOIN odr_orderdetail od ON o.orderid = od.orderid
+		  <where>
+		  	  <if test="qyid != null">
+		  	  	AND qyid = #{qyid} 
+		  	  </if>
+			  <if test="orderid != null and orderid != ''">
+				  AND o.orderid like '%${orderid}%'        
+			  </if>
+			  <if test="cuname != null and cuname != ''">
+				  AND cuname like '%${cuname}%'       
+			  </if>
+			  <if test="kdate != null and kdate != ''">
+				  AND createdate >= str_to_date('${kdate}','%Y-%m-%d %H:%i:%s')        
+			  </if>
+			  <if test="jdate != null and jdate != ''">
+				  AND createdate &lt;=DATE_ADD('${jdate}',INTERVAL +1 DAY)      
+			  </if>
+			  <if test="orderstatus != null and orderstatus != ''">
+				  AND orderstatus = #{orderstatus}    
+			  </if>
+		 </where>
+	</select> 
+	
+	<select id="queryid" resultType="com.hanson.model.odr.Order" parameterType="com.hanson.model.odr.Order"> 
+		select o.id,o.qyid,cuid,o.orderid,cuname,totalprice,number,orderstatus,productotallprice,
+		createdate,paytype ,o.fee from odr_order o inner JOIN odr_orderdetail od
+		on o.orderid = od.orderid
+	   where o.id=#{id}
+	</select>
+	
+	<select id="queryje" resultType="com.hanson.model.u.Company" parameterType="com.hanson.model.u.Company"> 
+	     select * from u_company where id=#{id}
+	</select>
+	
+	<update id="orderfahuo">
+		UPDATE  `odr_order` SET `orderstatus`='30' WHERE (`orderid`=#{0})
+	</update>
+	<update id="ordersc">
+		UPDATE  `odr_order` SET `orderstatus`='25' WHERE (`orderid`=#{0})
+	</update>
+	<update id="ordertx" parameterType="com.hanson.model.odr.Order">
+		UPDATE  `odr_order` SET `orderstatus`='20' WHERE (`orderid`=#{id})
+	</update>
+	
+	<insert id="insertjs" parameterType="com.hanson.model.odr.Txis">
+	INSERT INTO  `odr_txjs` ( `qyid`, `paytype`, `createdate`,`status`,amount,amountfee,amountreal,  `bdelete`, `orderid`) VALUES 
+	(#{qyid}, #{paytype}, #{createdate}, #{status},#{amount}, #{amountfee}, #{amountreal},   '0', #{orderid})
+	</insert>
+	
+	
+	<select id="findListByQYId" resultType="com.hanson.model.odr.Order" parameterType="java.util.Map">
+		<![CDATA[ select * from  odr_order  ]]> 
+		<where>
+			<if test="WdatePickerStart != null and WdatePickerStart != ''">
+			  	<![CDATA[ AND createdate >= #{WdatePickerStart}  ]]>      
+		    </if>
+		    <if test="WdatePickerEnd != null and WdatePickerEnd != ''">
+			 	<![CDATA[ AND createdate <= #{WdatePickerEnd}  ]]>      
+		    </if>	
+			<if test="allid != null and allid != ''">
+				and (qyid = #{paramId} or prometerid = #{paramId} or merchantid = #{paramId} or distributorid = #{paramId})
+				<!-- <foreach item="item" index="index" collection="allid" open="(" separator="," close=")">  
+			  	#{item}  
+				</foreach> -->
+			</if>
+		</where>
+	</select>
+	
+	<select id="findListByWhere" resultType="com.hanson.model.odr.Order" parameterType="java.util.Map">
+		select * from odr_order 
+		  <where>
+		    <if test="WdatePickerStart != null and WdatePickerStart != ''">
+			  	<![CDATA[ AND createdate >= #{WdatePickerStart}  ]]>      
+		    </if>
+		    <if test="WdatePickerEnd != null and WdatePickerEnd != ''">
+			 	<![CDATA[ AND createdate <= #{WdatePickerEnd}  ]]>      
+		    </if>
+		    <if test="statusArray != null and statusArray != ''">
+		    	and orderstatus in 
+		    	<foreach item="item" index="index" collection="statusArray" open="(" separator="," close=")">  
+				  #{item}  
+				</foreach>
+		    </if>
+		    <if test="payStatusArray != null and payStatusArray != ''">
+		    	and paystatus in 
+		    	<foreach item="item" index="index" collection="payStatusArray" open="(" separator="," close=")">  
+				  #{item}  
+				</foreach>
+		    </if>
+		    
+		  </where>
+	
+	</select> 
+	
+	<select id="findCountByWhere" resultType="map" parameterType="java.util.Map">
+		select count(*) number, sum(totalprice) totalprice  from odr_order 
+		  <where>
+		    <if test="WdatePickerStart != null and WdatePickerStart != ''">
+			  	<![CDATA[ AND createdate >= #{WdatePickerStart}  ]]>      
+		    </if>
+		    <if test="WdatePickerEnd != null and WdatePickerEnd != ''">
+			 	<![CDATA[ AND createdate <= #{WdatePickerEnd}  ]]>      
+		    </if>
+		    <if test="statusArray != null and statusArray != ''">
+		    	and orderstatus in 
+		    	<foreach item="item" index="index" collection="statusArray" open="(" separator="," close=")">  
+				  #{item}  
+				</foreach>
+		    </if>
+		    <if test="payStatusArray != null and payStatusArray != ''">
+		    	and paystatus in 
+		    	<foreach item="item" index="index" collection="payStatusArray" open="(" separator="," close=")">  
+				  #{item}  
+				</foreach>
+		    </if>
+		    
+		  </where>
+	
+	</select> 
+	
+	<!-- 统计某一时间段内增量订单和增量照片 -->
+	<select id="findPhotoaddnumber" resultType="map" parameterType="java.util.Map">
+		select count(distinct t.orderid) as addordernumber, sum(t1.number) as photoaddnumber from odr_order t, odr_orderdetail t1 
+		  <where>
+		  	t.orderid = t1.orderid
+		    <if test="WdatePickerStart != null and WdatePickerStart != ''">
+			  	<![CDATA[ AND t.createdate >= #{WdatePickerStart}  ]]>      
+		    </if>
+		    <if test="WdatePickerEnd != null and WdatePickerEnd != ''">
+			 	<![CDATA[ AND t.createdate <= #{WdatePickerEnd}  ]]>      
+		    </if>
+		    <if test="statusArray != null and statusArray != ''">
+		    	and orderstatus in 
+		    	<foreach item="item" index="index" collection="statusArray" open="(" separator="," close=")">  
+				  #{item}  
+				</foreach>
+		    </if>
+		    
+		  </where>
+	</select> 
+	
+	
+	<sql id="columns">
+		ID,
+		cuid,
+		qyid,
+		orderid,
+		cuname,
+		totalprice,
+		productotallprice,
+		0 as number,
+		orderstatus,
+		1 as txStatus,
+		createdate,
+		paytype,
+		0 as jsje,
+		0 as fyje,
+		0 as fybl
+	</sql>
+	
+	<!-- 查询条件 -->
+	<sql id="where">	
+		<where>
+			1=1
+			<if test="qyid != null">
+	    		<![CDATA[ and if(t.qyid is null or t.qyid = 0, if(t.prometerid is null or t.prometerid = 0, if(t.merchantid is null or t.merchantid = 0, if(t.distributorid is null or t.distributorid =0, 0, t.distributorid), t.merchantid), t.prometerid), t.qyid) = #{qyid} ]]>
+	    	</if>
+	    	
+	    	<if test="cuname != null and cuname != '' ">
+	    		<![CDATA[ and cuname like CONCAT('%',#{cuname},'%') ]]>
+	    	</if>
+	    	
+	    	<if test="orderid != null and orderid != '' ">
+	    		<![CDATA[ and t.orderid like CONCAT('%',#{orderid},'%') ]]>
+	    	</if>
+	    	
+	    	<if test="kdate != null and kdate != ''">
+				  AND createdate >= str_to_date('${kdate}','%Y-%m-%d %H:%i:%s')        
+			  </if>
+			  <if test="jdate != null and jdate != ''">
+				  AND createdate &lt;=DATE_ADD('${jdate}',INTERVAL +1 DAY)      
+			  </if>
+	    	
+	    	<if test="orderstatus != null">
+	    		<choose>
+		                <when test="orderstatus == 20">
+		                      <![CDATA[ and (orderstatus = #{orderstatus} or orderstatus = 0) ]]>
+		                </when>
+		                <otherwise>
+		                      <![CDATA[ and orderstatus = #{orderstatus} ]]>
+		                </otherwise>
+		        </choose>
+	    	</if>
+	    	
+	    	<if test="paystatus != null">
+	    		<![CDATA[ and paystatus = #{paystatus} ]]>
+	    	</if>
+	    	
+	    	<if test="txStatus != null">
+	    		<choose>
+		                <when test="txStatus == 10">
+		                      <![CDATA[ and (merchanfetstatus = #{txStatus} or merchanfetstatus = 0) ]]>
+		                </when>
+		                <otherwise>
+		                      <![CDATA[ and (merchanfetstatus = #{txStatus}) ]]>
+		                </otherwise>
+		         </choose>
+	    	</if>
+	    	
+    	</where>
+  	</sql>
+  	
+  	<!-- 排序条件 -->
+  	<sql id="page_sort">
+		<!--排序条件 -->
+		<if test="ORDER_BY_MENU!=null">
+			<choose>
+				<when test="ORDER_BY_DESC!=null">
+		 			<![CDATA[ order by ${ORDER_BY_MENU} ${ORDER_BY_DESC}]]>
+				</when>
+				<otherwise>
+					<![CDATA[ order by ${ORDER_BY_MENU}]]>
+				</otherwise>
+			</choose>
+		</if>
+	</sql>
+	
+	<!-- 分页查询-统计总数 -->
+  	<select id="countTotles" parameterType="java.util.Map" resultType="long">
+	    select count(*)
+		from odr_order t
+	    <include refid="where" />
+	    <include refid="page_sort" />
+  	</select>
+  	
+  	<!-- 分页查询 -->
+  	<select id="search" parameterType="java.util.Map" resultType="java.util.HashMap">
+	    select  
+		    ID,
+			cuid,
+			if(t.qyid is null or t.qyid = 0, if(t.prometerid is null or t.prometerid = 0, if(t.merchantid is null or t.merchantid = 0, if(t.distributorid is null or t.distributorid =0, 0, t.distributorid), t.merchantid), t.prometerid), t.qyid) as qyid,
+			t.orderid,
+			cuname,
+			totalprice/100 as totalprice,
+			productotallprice/100 as productotallprice,
+			<!-- (select sum(t1.number) from odr_orderdetail t1 where t.orderid = t1.orderid) as number,
+			 -->
+			CASE orderstatus
+	            WHEN 20 THEN '待生产'
+	            WHEN 25 THEN '生产完毕'
+	            WHEN 30 THEN '已发货'
+	            WHEN 110 THEN '已关闭'
+	            WHEN 200 THEN '无效订单'
+	            ELSE ''
+	         END as orderstatus,
+	         
+	         CASE paystatus
+			    WHEN 0 THEN '待支付'
+	            WHEN 1 THEN '支付中'
+	            WHEN 10 THEN '支付成功'
+	            WHEN 100 THEN '支付失败'
+	            ELSE ''
+	         END as paystatus,
+	         t5.txid as merchanttxid,
+	         CASE merchanfetstatus
+	            WHEN 0  THEN '未提现'
+	            WHEN 10 THEN '未提现 '
+	            WHEN 20 THEN '提现中'
+	            WHEN 40 THEN '成功提现'
+	            ELSE ''
+	         END as txStatus,
+	         
+			date_format(createdate,'%Y-%m-%d') as createdate,
+			
+			CASE paytype
+	            WHEN 0 THEN '支付宝 支付'
+	            WHEN 1 THEN '微信支付'
+	            ELSE ''
+	         END as paytype,
+			0 as jsje,
+			0 as fyje,
+			0 as fybl
+		from odr_order t left join  
+		(SELECT
+				t2.txid,
+				t3.orderid
+			FROM
+				(
+					SELECT
+						t4.id AS txid
+					FROM
+						odr_txjs t4,
+						u_company t1
+					WHERE
+						t4.qyid = t1.id
+					AND t1.companytype = 10
+				) t2,
+				fx_frrecord t3
+			WHERE
+				t2.txid = t3.txid
+			GROUP BY
+				t2.txid,
+				t3.orderid) t5
+		on t.orderid = t5.orderid
+	    <include refid="where" />
+	    <include refid="page_sort" />
+	    limit #{BEGIN_ROW},#{PAGE_SIZE}
+  	</select>
+  	
+  	<!-- 订单导出(废弃) -->
+  	<select id="getOrdersExcel" resultMap="orderResultMap" parameterType="com.hanson.model.odr.Order">
+	    select  
+		    ID,
+			cuid,
+			if(t.qyid is null or t.qyid = 0, if(t.prometerid is null or t.prometerid = 0, if(t.merchantid is null or t.merchantid = 0, if(t.distributorid is null or t.distributorid =0, 0, t.distributorid), t.merchantid), t.prometerid), t.qyid) as qyid,
+			t.orderid,
+			cuname,
+			totalprice/100 as totalprice,
+			productotallprice/100 as productotallprice,
+			0 as number,
+			orderstatus,
+			paystatus,
+	        merchanfetstatus as txStatus,
+	        t5.txid as merchanttxid,
+	        date_format(createdate,'%Y-%c-%e') as createdate,
+			paytype,
+			fee,
+			0 as jsje,
+			0 as fyje,
+			0 as fybl
+		from odr_order t left join  
+		(SELECT
+				t2.txid,
+				t3.orderid
+			FROM
+				(
+					SELECT
+						t4.id AS txid
+					FROM
+						odr_txjs t4,
+						u_company t1
+					WHERE
+						t4.qyid = t1.id
+					AND t1.companytype = 10
+				) t2,
+				fx_frrecord t3
+			WHERE
+				t2.txid = t3.txid
+			GROUP BY
+				t2.txid,
+				t3.orderid) t5
+		on t.orderid = t5.orderid
+	    <include refid="where" />
+	    order by t.createdate desc
+  	</select>
+  	
+  	<!-- 订单导出 -->
+  	<select id="getOrdersExcelNew" resultType="map" parameterType="com.hanson.model.odr.Order">
+	    
+	    select * from (select 
+							if(t.qyid is null or t.qyid = 0, if(t.prometerid is null or t.prometerid = 0, if(t.merchantid is null or t.merchantid = 0, if(t.distributorid is null or t.distributorid =0, 0, t.distributorid), t.merchantid), t.prometerid), t.qyid) as qyid,
+							t.orderid as orderid, 
+							t.orderstatus as orderstatus,
+							FORMAT(t.totalprice/100, 2) as totalprice,
+							FORMAT(t.produceprice/100, 2) as produceprice,
+							FORMAT((t.totalprice - t.productotallprice)/100, 2) as postagePrice,
+							(select sum(oo.number) from odr_orderdetail oo where oo.orderid = t.orderid) AS num,
+							t.expresstype,
+							t.paystatus,
+							0 as txStatus,
+							1 as paytype,
+							t2.shipname, 
+							t2.phone, 
+							t2.shipaddress,
+							t2.ExpressCompanyName, 
+							t2.expressno,
+							t.createdate,
+							t.cuname,
+							t4.`name`,
+							t4.producttype,
+							t3.size,
+							t3.specinfo,
+							t1.plastic,
+							t3.color,
+							sum(t1.number) as number,
+							FORMAT((case 
+							    when sum(t1.number*t1.price)>0.0 then sum(t1.number*t1.price)/100
+							    else 0
+							 end),2) as productPrice,
+							t.remark,
+							t.shipid
+							
+							from odr_orderdetail t1
+							left JOIN odr_order t on t.orderid = t1.orderid
+							left join odr_ordership t2 on  t.shipid = t2.ID
+							left join pdt_specvalue t3 on t1.specid = t3.id
+							left join pdt_product t4 on t3.productid = t4.ID
+							
+						    
+							<include refid="where" /> and t1.producttype in (10, 60)
+								
+							GROUP BY
+									t.orderid,
+									t3.specinfo,
+									t3.size,
+									t1.plastic
+									
+							
+							UNION
+							
+							select 
+							if(t.qyid is null or t.qyid = 0, if(t.prometerid is null or t.prometerid = 0, if(t.merchantid is null or t.merchantid = 0, if(t.distributorid is null or t.distributorid =0, 0, t.distributorid), t.merchantid), t.prometerid), t.qyid) as qyid,
+							t.orderid, 
+							t.orderstatus,
+							FORMAT(t.totalprice/100, 2) as totalprice,
+							FORMAT(t.produceprice/100, 2) as produceprice,
+							FORMAT((t.totalprice - t.productotallprice)/100, 2) as postagePrice,
+							(select sum(oo.number) from odr_orderdetail oo where oo.orderid = t.orderid) AS num,
+							t.expresstype,
+							t.paystatus,
+							0 as txStatus,
+							1 as paytype,
+							t2.shipname, 
+							t2.phone, 
+							t2.shipaddress,
+							t2.ExpressCompanyName, 
+							t2.expressno,
+							t.createdate,
+							t.cuname,
+							t4.`name`,
+							t4.producttype,
+							t3.size,
+							t3.specinfo,
+							t1.plastic,
+							t3.color,
+							t1.number as number,
+							FORMAT((case 
+							    when sum(t1.number*t1.price)>0.0 then sum(t1.number*t1.price)/100
+							    else 0
+							 end),2) as productPrice,
+							t.remark,
+							t.shipid
+							
+							from odr_orderdetail t1
+							left JOIN odr_order t on t.orderid = t1.orderid
+							left join odr_ordership t2 on  t.shipid = t2.ID
+							left join pdt_specvalue t3 on t1.specid = t3.id
+							left join pdt_product t4 on t3.productid = t4.ID
+							
+							<include refid="where" /> and t1.producttype in (20,30,40,50)
+							group by orderid
+							) as t5
+							order by createdate desc 
+  	</select>
+  	
+  	<select id="transactionAnalysis" resultType="map" parameterType="map">
+	select (CASE #{selecttype}
+   WHEN 1 THEN
+   DATE_FORMAT(createdate,'%Y-%c-%d') 
+ ELSE
+   DATE_FORMAT(createdate,'%Y-%c') 
+END
+) as createtime,
+count(id) as odrid,	
+sum(
+		CASE paystatus
+		WHEN 10 THEN
+			1
+		ELSE
+			0
+		END
+	) AS payOdrNumber, sum(totalprice) as allprice,
+sum(
+		CASE paystatus
+		WHEN 10 THEN
+			totalprice
+		ELSE
+			0
+		END
+	) AS payOdrTotalprice,count(DISTINCT cuid) as allorderperson,
+COUNT(DISTINCT 
+  case paystatus
+  WHEN 10 then cuid
+ ELSE
+  0
+END
+) as payorderperson
+  from odr_order   where convert(createdate,date) >= #{createdate} and #{enddate} >=convert(createdate,date)   
+    group by createtime;
+</select>
+<select id="transactionAnalysisCount" resultType="map" parameterType="map">
+	select (CASE #{selecttype}
+   WHEN 1 THEN
+   DATE_FORMAT(createdate,'%Y-%c-%d') 
+ ELSE
+   DATE_FORMAT(createdate,'%Y-%c') 
+END
+) as createtime,
+count(id) as odrid,	
+sum(
+		CASE paystatus
+		WHEN 10 THEN
+			1
+		ELSE
+			0
+		END
+	) AS payOdrNumber, sum(totalprice) as allprice,
+sum(
+		CASE paystatus
+		WHEN 10 THEN
+			totalprice
+		ELSE
+			0
+		END
+	) AS payOdrTotalprice,count(DISTINCT cuid) as allorderperson,
+	COUNT(DISTINCT 
+  case paystatus
+  WHEN 10 then cuid
+ ELSE
+  0
+END
+) as payorderperson
+	from odr_order where convert(createdate,date) >= #{createdate} and  #{enddate} >= convert(createdate,date);
+</select>
+  	<select id="findOrderById" parameterType="com.hanson.model.odr.Order" resultType="com.hanson.model.odr.Order">
+  		select * from odr_order where orderid = #{orderid}
+  	</select>
+</mapper>

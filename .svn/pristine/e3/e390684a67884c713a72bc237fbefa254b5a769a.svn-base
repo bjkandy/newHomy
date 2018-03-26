@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hanson.mapper.AuthoritiesMapper">
+	<resultMap type="com.hanson.model.Authorities" id="AuthoritiesCResult">
+		<id column="id1" property="id" />
+		<result column="name1" property="name" />
+		<result column="display_name1" property="display_name" />
+		<result column="parentid1" property="parentid" />
+		<result column="iconcls1" property="iconcls" />
+		<result column="expanded1" property="expanded" />
+		<result column="request1" property="request" />
+		<result column="leaf1" property="leaf" />
+		<result column="sortno1" property="sortno" />
+		<result column="remark1" property="remark" />
+		<result column="icon1" property="icon" />
+		<result column="authtype1" property="authtype" />
+		<result column="authno1" property="authno" />
+		<result column="targetrel1" property="targetrel" />
+	</resultMap>
+	
+	<resultMap type="com.hanson.model.Authorities" id="AuthoritiesResult">
+		<id column="id" property="id" />
+		<result column="name" property="name" />
+		<result column="display_name" property="display_name" />
+		<result column="parentid" property="parentid" />
+		<result column="iconcls" property="iconcls" />
+		<result column="expanded" property="expanded" />
+		<result column="request" property="request" />
+		<result column="leaf" property="leaf" />
+		<result column="sortno" property="sortno" />
+		<result column="remark" property="remark" />
+		<result column="icon" property="icon" />
+		<result column="authtype" property="authtype" />
+		<result column="authno" property="authno" />
+		<result column="targetrel" property="targetrel" />
+		<collection property="authoritiesList" resultMap="AuthoritiesCResult" />
+	</resultMap>
+
+	<select id="findAuthoritiesList" parameterType="com.hanson.model.Authorities"
+		resultMap="AuthoritiesResult">
+		select 
+			t1.*,
+			t2.id id1, 
+			t2.name name1, 
+			t2.display_name display_name1, 
+			t2.parentid parentid1, 
+			t2.iconcls iconcls1, 
+			t2.expanded expanded1, 
+			t2.request request1, 
+			t2.leaf leaf1, 
+			t2.sortno sortno1, 
+			t2.remark remark1, 
+			t2.icon icon1,
+			t2.authtype authtype1,
+			t2.authno authno1,
+			t2.targetrel targetrel1
+			
+		from (select * from authorities t where t.PARENTID = 0 order by t.SORTNO) t1 left join authorities t2 on  t1.id = t2.PARENTID order by t1.SORTNO, t2.SORTNO
+
+	</select>
+	
+	<insert id="saveAuthorities" parameterType="com.hanson.model.Authorities">
+		insert into authorities (
+			name, 
+			display_name, 
+			parentid, 
+			iconcls, 
+			expanded, 
+			request, 
+			leaf, 
+			sortno, 
+			remark, 
+			icon, 
+			authtype, 
+			authno, 
+			targetrel) values (
+			#{name},
+			#{display_name},
+			#{parentid},
+			#{iconcls},
+			null,
+			#{request},
+			null,
+			#{sortno},
+			#{remark},
+			null,
+			#{authtype},
+			#{authno},
+			null
+			)
+	</insert>
+	
+	<!-- 编辑权限 -->
+	<update id="updateAuthorities" parameterType="com.hanson.model.Authorities">
+		update 
+			authorities 
+		set 
+			name=#{name},
+		 	display_name=#{display_name},
+		 	parentid=#{parentid},
+		 	authtype=#{authtype},
+		 	request=#{request},
+		 	sortno=#{sortno},
+		 	authno=#{authno},
+		 	iconcls=#{iconcls},
+		 	remark=#{remark}
+		where id = #{id} 	  
+	</update>
+	
+	<!-- 删除权限 -->
+	<delete id="deleteAuthorities" parameterType="com.hanson.model.Authorities">
+		delete from authorities where id = #{id}
+	</delete>
+	
+	<!-- 根据ID查询权限 -->
+	<select id="findAuthoritiesById" parameterType="com.hanson.model.Authorities" resultType="com.hanson.model.Authorities">
+		select * from authorities where id = #{id}
+	</select>
+	
+	<!-- 查询根目录 -->
+	<select id="findAuthoritiesRoot" parameterType="com.hanson.model.Authorities" resultType="com.hanson.model.Authorities">
+		select * from authorities where parentid = 0
+	</select>
+	
+	<select id="findAuthoritiesByUserId" parameterType="com.hanson.model.User" resultMap="AuthoritiesResult">
+		select 
+			t1.*,
+			t2.id id1, 
+			t2.name name1, 
+			t2.display_name display_name1, 
+			t2.parentid parentid1, 
+			t2.iconcls iconcls1, 
+			t2.expanded expanded1, 
+			t2.request request1, 
+			t2.leaf leaf1, 
+			t2.sortno sortno1, 
+			t2.remark remark1, 
+			t2.icon icon1,
+			t2.authtype authtype1,
+			t2.authno authno1,
+			t2.targetrel targetrel1
+			
+		from (select DISTINCT a2.* from users_roles a, roles_authorities a1, authorities a2 where a.USER_ID = #{id} and a.ROLE_ID = a1.ROLE_ID and a1.AUTHORITY_ID = a2.ID and a2.PARENTID = 0 ORDER BY a2.SORTNO) t1 
+    left join (select DISTINCT a2.* from users_roles a, roles_authorities a1, authorities a2 where a.USER_ID = #{id} and a.ROLE_ID = a1.ROLE_ID and a1.AUTHORITY_ID = a2.ID) t2 on  t1.id = t2.PARENTID order by t1.SORTNO, t2.SORTNO
+   
+	</select>
+	
+
+</mapper>

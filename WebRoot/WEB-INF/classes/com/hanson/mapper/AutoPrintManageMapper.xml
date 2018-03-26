@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hanson.mapper.AutoPrintManageMapper">
+	
+	
+	<select id="autoPrintOrder" resultType="Map" parameterType="Map">
+			   			SELECT
+							od.merchantid AS merchantid,
+							eq.id AS id,
+							eq.equipmentname AS equipmentname,
+							eq.provincename AS provincename,
+							eq.cityname AS cityname,
+							eq.districtname AS districtname,
+							od.paystatus AS paystatus,
+						    od.merchanfetstatus as merchanfetstatus,
+						    convert(od.createdate,date) as createdate
+						FROM
+							odr_order AS od,
+							pdt_equipment AS eq
+						WHERE
+						   		 od.equipmentid=eq.id
+						    <if test="merchantid != null and merchantid != ''"> 
+								and od.merchantid= #{merchantid}
+							</if>
+							<if test="id != null and id != ''"> 
+								and eq.id= #{id}
+							</if>
+							<if test="paystatus != null and paystatus != ''"> 
+								and od.paystatus= #{paystatus}
+							</if>
+							<if test="merchanfetstatus != null and merchanfetstatus != ''"> 
+								and od.merchanfetstatus= #{merchanfetstatus}
+							</if>
+							<if test="orderid != null and orderid != ''"> 
+								and od.orderid= #{orderid}
+							</if>
+							<if test="txid != null and txid != ''"> 
+								and od.txid= #{txid}
+							</if>
+							<if test="provincename != null and provincename != ''"> 
+								and eq.provincename= #{provincename}
+							</if>
+							<if test="cityname != null and cityname != ''"> 
+								and eq.cityname= #{cityname}
+							</if>
+							<if test="districtname != null and districtname != ''"> 
+								and eq.districtname= #{districtname}
+							</if>
+						   <if test="startTime != null and startTime != ''"> 
+							    AND convert(od.createdate,date)	>=#{startTime}	       
+						   </if>
+						   <if test="endTime != null and endTime != ''">
+								    AND #{endTime} >= convert(od.createdate,date) 	       
+						  </if>	
+						  LIMIT #{startLin},#{pageSize}   
+	</select>
+	
+	<select id="autoPrintOrderCount" resultType="String" parameterType="Map">
+			   			SELECT
+							count(1) as num
+						FROM
+							odr_order AS od,
+							pdt_equipment AS eq
+						WHERE
+						   		 od.equipmentid=eq.id
+								and od.merchantid= #{merchantid}
+							<if test="id != null and id != ''"> 
+								and eq.id= #{id}
+							</if>
+							<if test="paystatus != null and paystatus != ''"> 
+								and od.paystatus= #{paystatus}
+							</if>
+							<if test="merchanfetstatus != null and merchanfetstatus != ''"> 
+								and od.merchanfetstatus= #{merchanfetstatus}
+							</if>
+							<if test="orderid != null and orderid != ''"> 
+								and od.orderid= #{orderid}
+							</if>
+							<if test="txid != null and txid != ''"> 
+								and od.txid= #{txid}
+							</if>
+							<if test="provincename != null and provincename != ''"> 
+								and eq.provincename= #{provincename}
+							</if>
+							<if test="cityname != null and cityname != ''"> 
+								and eq.cityname= #{cityname}
+							</if>
+							<if test="districtname != null and districtname != ''"> 
+								and eq.districtname= #{districtname}
+							</if>
+						   <if test="startTime != null and startTime != ''"> 
+							    AND convert(od.createdate,date)	>=#{startTime}	       
+						   </if>
+						   <if test="endTime != null and endTime != ''">
+								    AND #{endTime} >= convert(od.createdate,date) 	       
+						  </if>	
+						  group by od.orderid
+	</select>
+	
+	<select id="autoPrintOrderExcel" resultType="Map" parameterType="Map">
+			   			SELECT
+							od.merchantid AS merchantid,
+							eq.id AS id,
+							eq.equipmentname AS equipmentname,
+							eq.provincename AS provincename,
+							eq.cityname AS cityname,
+							eq.districtname AS districtname,
+							od.paystatus AS paystatus,
+						    od.merchanfetstatus as merchanfetstatus,
+						    convert(od.createdate,date) as createdate
+						FROM
+							odr_order AS od,
+							pdt_equipment AS eq
+						WHERE
+						   		 od.equipmentid=eq.id
+								and od.merchantid= #{merchantid}
+							<if test="id != null and id != ''"> 
+								and eq.id= #{id}
+							</if>
+							<if test="paystatus != null and paystatus != ''"> 
+								and od.paystatus= #{paystatus}
+							</if>
+							<if test="merchanfetstatus != null and merchanfetstatus != ''"> 
+								and od.merchanfetstatus= #{merchanfetstatus}
+							</if>
+							<if test="orderid != null and orderid != ''"> 
+								and od.orderid= #{orderid}
+							</if>
+							<if test="txid != null and txid != ''"> 
+								and od.txid= #{txid}
+							</if>
+							<if test="provincename != null and provincename != ''"> 
+								and eq.provincename= #{provincename}
+							</if>
+							<if test="cityname != null and cityname != ''"> 
+								and eq.cityname= #{cityname}
+							</if>
+							<if test="districtname != null and districtname != ''"> 
+								and eq.districtname= #{districtname}
+							</if>
+						   <if test="startTime != null and startTime != ''"> 
+							    AND convert(od.createdate,date)	>=#{startTime}	       
+						   </if>
+						   <if test="endTime != null and endTime != ''">
+								AND #{endTime} >= convert(od.createdate,date) 	       
+						  </if>	
+	</select>
+	<select id="autoPrintOrderInfo" resultType="Map" parameterType="Map">
+						SELECT
+							od.orderid AS orderid,
+							od.merchantid AS merchantid,
+							od.txid AS txid,
+							uc.companytype AS companytype,
+							us.nickname AS nickname,
+							od.paystatus AS paystatus,
+							o.number AS number,
+							od.merchanfetstatus AS merchanfetstatus,
+							od.totalprice AS totalprice,
+							od.paytype AS paytype,
+							eq.address AS address,
+							uc.autoprintrate AS autoprintrate,
+							f.fyamount AS fyamount,
+							od.equipmentid AS equipmentid,
+							eq.equipmentname AS equipmentname,
+							od.paydate AS paydate,
+							convert(od.createdate,date) AS createdate
+						FROM
+							odr_order AS od,
+							pdt_equipment AS eq,
+							u_company AS uc,
+							u_seconduser AS us,
+							(
+								SELECT
+									odt.orderid AS orderid,
+									sum(odt.number) AS number,
+									odt.price AS price,
+									odt.size AS size,
+									odt.spec AS spec
+								FROM
+									odr_orderdetail AS odt
+								WHERE
+									odt.orderid = #{orderid}
+								GROUP BY
+									odt.orderid
+							) AS o,
+							(
+								SELECT
+									SUM(fx.fyamount) AS fyamount
+								FROM
+									odr_order AS odr,
+									fx_frrecord AS fx
+								WHERE
+									fx.orderid = #{orderid}
+								AND odr.txid = fx.txid
+								AND odr.orderid = fx.orderid
+							) AS f
+						WHERE
+							od.orderid = #{orderid}
+						AND od.equipmentid = eq.id
+						AND od.cuid = us.id
+						AND od.merchantid = uc.id
+	</select>
+
+</mapper>

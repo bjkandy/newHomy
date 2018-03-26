@@ -1,0 +1,75 @@
+<link rel="stylesheet" type="text/css" href="css/table.css"/>
+<link rel="stylesheet" href="css/common.css" />
+<style>
+    .quick_search>button{
+        float: right;
+        background-color: #169BD5;
+        text-align: center;
+        width:80px;
+        height:30px;
+        line-height: 30px;
+        border:none;
+        color: #FFFFFF;
+        font-size: 16px;
+        border-radius: 5px;
+        margin-right: 20px;
+    }
+</style>
+<!--快速查询-->
+<div class="quick_search">
+    <span>商户名称：<input type="text"/></span>
+    <span>商户编号:<input type="text"/></span>
+    <span>商户类型:
+		<select name="">
+			<option value="">请选择</option>
+		</select>
+	</span>
+    <span>
+		<select name="">
+			<option value="">筛选时间（月）</option>
+		</select>
+        <input type="text" placeholder="请选择月份" />
+	</span>
+    <button>筛选</button>
+    <button onclick="exportExcel();">导出报表</button>
+</div>
+<!--表单-->
+<table id="cs_table" class="datatable"></table>
+<script src="js/table.js" type="text/javascript" charset="utf-8"></script>
+<script>
+	var data = [];
+	for(var i=0;i<334;i++){
+		data[i] = {id:i+1,caozuo:"操作"+(i+1),qyid:"11111",name:"汇美微传",dengluming:"阿斯蒂芬",shengfen:"湖南省"};
+	}
+	var cs = new table({
+		"tableId":"cs_table",  
+		"cache":true,    //必须
+		"url":"dataCenter/merchantData",  //必须
+		"headers":["商户编号","商户名称","新增粉丝数","跑路粉丝数","净增粉丝数","累计粉丝数","订单总数","付款订单总数","订单总金额","付款订单总金额","注册日期","商户类型","省","手机","电话"],   //必须
+		"data":data, 
+		"currentPageNum":1,       
+		"displayNum": 6,    //必须   默认 10
+		"groupDataNum":9  //可选    默认 10
+	});
+	//查询
+function querybytj(){
+	cs.paramData = $("#orderSearchForm").serializeArray();
+	cs.init(0, cs.displayNum);
+}
+
+//excel导出
+function exportExcel(){
+	var kdate = $("#kdate").val();
+	var jdate = $("#jdate").val();
+	if(kdate == '' || jdate == ''){
+		alert("请输入一个时间段作为导出条件");
+	}else{
+		$("#orderSearchForm").attr("action", "dataCenter/merchantDataExcel");
+		$("#orderSearchForm").submit();
+	}
+	
+	
+	//alert($("#orderSearchForm").serializeArray());
+	//location.href = "order/exportExcel";
+}
+</script>

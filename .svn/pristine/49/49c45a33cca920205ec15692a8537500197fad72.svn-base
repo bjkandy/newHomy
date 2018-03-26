@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hanson.mapper.YuyueMapper">
+   <select id="Selectprojectname" resultType="com.hanson.model.ServiceProject" parameterType="java.lang.String">
+      select * from yy_serviceproject  where projectname = #{projectname}
+   </select>
+   
+    <insert id="saveyuepaiProject"  parameterType="com.hanson.model.ServiceProject" useGeneratedKeys="true" keyProperty="id">
+      insert into yy_serviceproject 
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+          <if test="projectname != null">
+               projectname,
+          </if>
+          <!--新增插入企业id-->
+          <if test="qyid != null">  
+                    qyid,  
+          </if>    
+          <if test="englishname!=null">
+               englishname,
+          </if>
+          <if test="shootingtype!=null">
+               shootingtype,
+          </if>
+          <if test="totalamount!=null">
+               totalamount,
+          </if>
+          <if test="deposit!=null">
+               deposit,
+          </if>
+          <if test="updownframestatus!=null">
+              updownframestatus,
+          </if>
+          <if test="firstbanner!=null">
+              firstbanner,
+          </if>
+          <if test="detailpic!=null">
+              detailpic,
+          </if>
+          <if test="examplepic!=null">
+             examplepic,
+          </if>
+          <if test="orderpic!=null">
+            orderpic,
+          </if>
+          <if test="serviceinfo!=null">
+            serviceinfo,
+          </if>
+          <if test="mainfunction!=null">
+           mainfunction,
+          </if>
+          <if test="specialcontent!=null">
+             specialcontent,
+          </if>
+          <if test="addservice!=null">
+             addservice,
+          </if>
+          <if test="salesvolume!=null">
+             salesvolume,
+          </if>
+          <if test="projecttype!=null">
+             projecttype,
+          </if>
+             createdate,
+             bdelete
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">   
+          <if test="projectname != null">
+             #{projectname,jdbcType=VARCHAR},
+          </if>
+          
+           <!--新增插入企业id-->
+          <if test="qyid != null">  
+                    #{qyid,jdbcType=INTEGER},  
+          </if>  
+          <if test="englishname!=null">
+             #{englishname,jdbcType=VARCHAR},
+          </if>
+          <if test="shootingtype!=null">
+            #{shootingtype,jdbcType=INTEGER},
+          </if>
+          <if test="totalamount!=null">
+           #{totalamount,jdbcType=DOUBLE},
+          </if>
+          <if test="deposit!=null">
+            #{deposit,jdbcType=DOUBLE},
+          </if>
+          <if test="updownframestatus!=null">
+            #{updownframestatus,jdbcType=INTEGER},
+          </if>
+          <if test="firstbanner!=null">
+            #{firstbanner,jdbcType=VARCHAR},
+          </if>
+          <if test="detailpic!=null">
+            #{detailpic,jdbcType=VARCHAR},
+          </if>
+          <if test="examplepic!=null">
+            #{examplepic,jdbcType=VARCHAR},
+          </if>
+          <if test="orderpic!=null">
+            #{orderpic,jdbcType=VARCHAR},
+          </if>
+          <if test="serviceinfo!=null">
+            #{serviceinfo,jdbcType=VARCHAR},
+          </if>
+          <if test="mainfunction!=null">
+            #{mainfunction,jdbcType=VARCHAR},
+          </if>
+          <if test="specialcontent!=null">
+            #{specialcontent,jdbcType=VARCHAR},
+          </if>
+          <if test="addservice!=null">
+            #{addservice,jdbcType=VARCHAR},
+          </if>
+          <if test="salesvolume!=null">
+            #{salesvolume,jdbcType=INTEGER},
+          </if>
+          <if test="projecttype!=null">
+            #{projecttype,jdbcType=INTEGER},
+          </if>
+            now(),1
+         
+        </trim>
+    </insert>
+   <select id="search" parameterType="java.util.Map" resultType="java.util.Map">
+      SELECT id,projectname,englishname,shootingtype,totalamount,updownframestatus,serviceinfo,mainfunction,
+       mainfunction,specialcontent,addservice,salesvolume,createdate FROM yy_serviceproject WHERE 1=1 ORDER BY ID DESC LIMIT #{BEGIN_ROW},#{PAGE_SIZE}
+   </select>
+   <select id="Selectcountpages" parameterType="java.util.Map" resultType="java.lang.Integer">
+     select count(id) from yy_serviceproject where  bdelete=1
+   </select>
+   <select id="getYuyue"  resultType="com.hanson.model.ServiceProject">
+     select * from  yy_serviceproject where  bdelete=1 and qyid=103
+   </select>
+   <!--  -->
+    <select id="getProductTagByQyid" parameterType="java.lang.Integer" resultType="String">
+     select productTag from  yy_serviceproject where qyid=#{qyid}
+   </select>
+   <update id="ReviseServiceProject" parameterType="com.hanson.model.ServiceProject">
+      update yy_serviceproject
+      <trim prefix="set" suffixOverrides=",">
+       <if test="projectname!=null">
+         projectname=#{projectname},
+       </if>
+       <if test="englishname!=null">
+         englishname=#{englishname},
+       </if>
+       <if test="shootingtype!=null">
+         shootingtype=#{shootingtype},
+       </if>
+       <if test="totalamount!=null">
+         totalamount=#{totalamount},
+       </if>
+       <if test="deposit!=null">
+         deposit=#{deposit},
+       </if>
+       <if test="updownframestatus!=null">
+         updownframestatus=#{updownframestatus},
+       </if>
+       <if test="firstbanner!=null">
+         firstbanner=#{firstbanner},
+       </if>
+       <if test="detailpic!=null">
+         detailpic=#{detailpic},
+       </if>
+       <if test="examplepic!=null">
+          examplepic=#{examplepic},
+       </if>
+       <if test="orderpic!=null">
+         orderpic=#{orderpic},
+       </if>
+       <if test="serviceinfo!=null">
+          serviceinfo=#{serviceinfo},
+       </if>
+       <if test="mainfunction!=null">
+         mainfunction=#{mainfunction},
+       </if>
+       <if test="specialcontent!=null">
+         specialcontent=#{specialcontent},
+       </if>
+       <if test="addservice!=null">
+          addservice=#{addservice},
+       </if>
+       <if test="salesvolume!=null">
+         salesvolume=#{salesvolume},
+       </if>
+       <if test="projecttype!=null">
+          projecttype=#{projecttype},
+       </if>
+       <if test="bdelete!=null">
+         bdelete=#{bdelete},
+       </if>
+        
+      </trim>
+      where id=#{id}
+    </update>
+   <select id="FindServiceProject" parameterType="java.lang.Long" resultType="com.hanson.model.ServiceProject">
+      select * from yy_serviceproject where id=#{id} 
+   </select>
+
+   <delete id="DeleteServiceProject" parameterType="java.lang.Long">
+   	delete from  yy_serviceproject where id=#{id} 
+   </delete>   
+   
+  
+   <insert id="addYuePaiProduct">
+    insert in yy_serviceproject
+   </insert>
+   
+   
+      <update id="updateYuePai" parameterType="com.hanson.model.ServiceProject">
+      update yy_serviceproject
+      <trim prefix="set" suffixOverrides=",">
+       <if test="projectname!=null">
+         projectname=#{projectname},
+       </if>
+       <if test="englishname!=null">
+         englishname=#{englishname},
+       </if>
+       <if test="shootingtype!=null">
+         shootingtype=#{shootingtype},
+       </if>
+       <if test="updownframestatus!=null">
+         updownframestatus=#{updownframestatus},
+       </if>
+       <if test="firstbanner!=null">
+         firstbanner=#{firstbanner},
+       </if>
+       <if test="detailpic!=null">
+         detailpic=#{detailpic},
+       </if>
+       <if test="examplepic!=null">
+          examplepic=#{examplepic},
+       </if>
+       <if test="orderpic!=null">
+         orderpic=#{orderpic},
+       </if>
+       <if test="serviceinfo!=null">
+          serviceinfo=#{serviceinfo},
+       </if>
+       <if test="mainfunction!=null">
+         mainfunction=#{mainfunction},
+       </if>
+       <if test="specialcontent!=null">
+         specialcontent=#{specialcontent},
+       </if>
+       <if test="addservice!=null">
+          addservice=#{addservice},
+       </if>
+       <if test="salesvolume!=null">
+         salesvolume=#{salesvolume},
+       </if>
+       <if test="projecttype!=null">
+          projecttype=#{projecttype},
+       </if>
+       <if test="bdelete!=null">
+         bdelete=#{bdelete},
+       </if>
+       
+      </trim>
+      where qyid=#{qyid} and productTag=#{productTag}
+    </update>
+         
+</mapper>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>权限管理</title>
+        <script src="js/jquery.min.js"></script>
+	</head>
+	<body>
+		<button class="allChoose">全选</button><button class="noChoose">重置</button>
+		<ul id="functionalAuthority">
+			<li>
+				<div><input type="checkbox"/><span>企业信息管理</span></div>
+				<ul>
+					<li><input type="checkbox"/><span>企业管理</span></li>
+					<li><input type="checkbox"/><span>活跃商户</span></li>
+					<li><input type="checkbox"/><span>商户数据统计</span></li>
+					<li><input type="checkbox"/><span>商户增量数据统计</span></li>
+				</ul>
+			</li>
+			<li>
+				<div><input type="checkbox"/><span>会员管理</span></div>
+				<ul>
+					<li><input type="checkbox"/><span>会员信息</span></li>
+				</ul>
+			</li>
+			<li>
+				<div><input type="checkbox"/><span>微信信息管理</span></div>
+				<ul>
+					<li><input type="checkbox"/><span>消息模板管理</span></li>
+					<li><input type="checkbox"/><span>消息模板审核</span></li>
+				</ul>
+			</li>
+			<li>
+				<div><input type="checkbox"/><span>企业信息管理</span></div>
+				<ul>
+					<li><input type="checkbox"/><span>企业管理</span></li>
+					<li><input type="checkbox"/><span>活跃商户</span></li>
+					<li><input type="checkbox"/><span>商户数据统计</span></li>
+					<li><input type="checkbox"/><span>商户增量数据统计</span></li>
+				</ul>
+			</li>
+			<li>
+				<div><input type="checkbox"/><span>企业信息管理</span></div>
+				<ul>
+					<li><input type="checkbox"/><span>企业管理</span></li>
+					<li><input type="checkbox"/><span>活跃商户</span></li>
+					<li><input type="checkbox"/><span>商户数据统计</span></li>
+					<li><input type="checkbox"/><span>商户增量数据统计</span></li>
+				</ul>
+			</li>
+			<li>
+				<div><input type="checkbox"/><span>企业信息管理</span></div>
+				<ul>
+					<li><input type="checkbox"/><span>企业管理</span></li>
+					<li><input type="checkbox"/><span>活跃商户</span></li>
+					<li><input type="checkbox"/><span>商户数据统计</span></li>
+					<li><input type="checkbox"/><span>商户增量数据统计</span></li>
+				</ul>
+			</li>
+			<li>
+				<div><input type="checkbox"/><span>企业信息管理</span></div>
+				<ul>
+					<li><input type="checkbox"/><span>企业管理</span></li>
+					<li><input type="checkbox"/><span>活跃商户</span></li>
+					<li><input type="checkbox"/><span>商户数据统计</span></li>
+					<li><input type="checkbox"/><span>商户增量数据统计</span></li>
+				</ul>
+			</li>
+			<li>
+				<div><input type="checkbox"/><span>企业信息管理</span></div>
+				<ul>
+					<li><input type="checkbox"/><span>企业管理</span></li>
+					<li><input type="checkbox"/><span>活跃商户</span></li>
+					<li><input type="checkbox"/><span>商户数据统计</span></li>
+					<li><input type="checkbox"/><span>商户增量数据统计</span></li>
+				</ul>
+			</li>
+		</ul>
+	</body>
+	<script type="text/javascript">
+		$(function(){
+			//全选  重置操作
+			$(".allChoose").click(function(){
+				$("#functionalAuthority input").attr("checked",true);
+			})
+			$(".noChoose").click(function(){
+				$("#functionalAuthority input").attr("checked",false);
+			})
+			//二级全选操作
+			$("#functionalAuthority>li").on("click","div>input",function(){
+				var $this=$(this);
+				console.log($this.attr("checked")=="checked");
+				if($this.attr("checked")=="checked"){
+					$this.parent().siblings("ul").find("input").attr("checked",true);
+				}else{
+					$this.parent().siblings("ul").find("input").attr("checked",false);
+				}
+			})
+			//折叠三级菜单
+			$("#functionalAuthority>li").on("click","div>span",function(){
+				var $this=$(this);
+				$this.parent().siblings("ul").toggle();
+			})
+			//三级菜单选中操作
+			$("#functionalAuthority>li>ul input").change(function(){
+				var $this=$(this);
+				if($this.attr("checked")==undefined){
+					$this.closest("ul").prev("div").find("input").attr("checked",false);
+				}else{
+					var $input=$this.closest("ul").find("input");
+					var num=0;
+					$.each($input, function(i,v) {
+						if($(v).attr("checked")=="checked"){
+							num++;
+						}
+					});
+					if(num==$input.length){
+						console.log("进来了");
+						$this.closest("ul").prev("div").find("input").attr("checked",true);
+					}
+				}
+			})
+		})
+	</script>
+</html>

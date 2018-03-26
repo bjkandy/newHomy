@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>权限项管理</title>
+        <script src="js/jquery.min.js"></script>
+        <style type="text/css">
+       		td,th{
+       			width: 200px;
+       			height: 50px;
+       		} 	
+       		table{
+       			text-align: center;
+       		}
+       		.left_td td:first-child{
+       			text-align: left;
+   
+       		}
+        </style>	
+	</head>
+	<body>
+		<table border="1" cellpadding="0" cellspacing="0">
+			<thead>
+				<tr>
+					<th>权限名称</th>
+					<th>权限编码</th>
+					<th>权限类型</th>
+					<th>图标类型</th>
+					<th>访问地址</th>
+					<th>显示排序</th>
+					<th>权限排序</th>
+					<th>备注</th>
+					<th>操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr class="left_td">
+					<td>企业信息管理</td>
+					<td>A_COMPANY_MENU</td>
+					<td>menu</td>
+					<td></td>
+					<td>/#</td>
+					<td>1</td>
+					<td>600</td>
+					<td></td>
+					<td><a href="#">[删除]</a></td>
+				</tr>
+				<tr>
+					<td colspan="9">
+						<div>
+							<table border="1" cellpadding="0" cellspacing="0" style="text-align: center;">
+								<tbody>
+									<tr>
+										<td>企业管理</td>
+										<td>A_COMPANY_MENU</td>
+										<td>menu</td>
+										<td></td>
+										<td>/#</td>
+										<td>1</td>
+										<td>600</td>
+										<td></td>
+										<td><a href="#">[删除]</a></td>
+									</tr>
+									<tr>
+										<td>活跃商户</td>
+										<td>A_COMPANY_MENU</td>
+										<td>menu</td>
+										<td></td>
+										<td>/#</td>
+										<td>1</td>
+										<td>600</td>
+										<td></td>
+										<td><a href="#">[删除]</a></td>
+									</tr>
+									<tr>
+										<td>商户数量统计</td>
+										<td>A_COMPANY_MENU</td>
+										<td>menu</td>
+										<td></td>
+										<td>/#</td>
+										<td>1</td>
+										<td>600</td>
+										<td></td>
+										<td><a href="#">[删除]</a></td>
+									</tr>
+									<tr>
+										<td>商户增量统计</td>
+										<td>A_COMPANY_MENU</td>
+										<td>menu</td>
+										<td></td>
+										<td>/#</td>
+										<td>1</td>
+										<td>600</td>
+										<td></td>
+										<td><a href="#">[删除]</a></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</td>
+				</tr>
+				<tr class="left_td">
+					<td>会员管理</td>
+					<td>A_COMPANY_MENU</td>
+					<td>menu</td>
+					<td></td>
+					<td>/#</td>
+					<td>1</td>
+					<td>600</td>
+					<td></td>
+					<td><a href="#">[删除]</a></td>
+				</tr>
+				<tr>
+					<td colspan="9">
+						<div>
+							<table border="1" cellpadding="0" cellspacing="0" style="text-align: center;">
+								<tbody>
+									<tr>
+										<td>会员信息</td>
+										<td>A_COMPANY_MENU</td>
+										<td>menu</td>
+										<td></td>
+										<td>/#</td>
+										<td>1</td>
+										<td>600</td>
+										<td></td>
+										<td><a href="#">[删除]</a></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</body>
+	<script type="text/javascript">
+		$(".left_td td:first-child").click(function(){
+			console.log(this);
+			$(this).parent().next().toggle();
+		})
+	</script>
+</html>

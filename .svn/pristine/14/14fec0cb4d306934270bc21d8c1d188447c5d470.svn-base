@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hanson.mapper.EquipmentMapper">
+	<select id="get" resultType="com.hanson.model.Equipment">
+		select * from pdt_equipment where id = #{0}
+	</select>
+	
+	<select id="pagingQuery" resultType="map">
+		select * from pdt_equipment
+		<include refid="where" />
+		<include refid="page_sort" />
+		limit #{BEGIN_ROW},#{PAGE_SIZE}
+	</select>
+	
+	<select id="count" parameterType="map" resultType="java.lang.Long">
+		select count(*) from pdt_equipment
+		<include refid="where" />
+	</select>
+	
+	<!-- 排序条件 -->
+  	<sql id="page_sort">
+		<!--排序条件 -->
+		<if test="ORDER_BY_MENU!=null">
+			<choose>
+				<when test="ORDER_BY_DESC!=null">
+		 			<![CDATA[ order by ${ORDER_BY_MENU} ${ORDER_BY_DESC}]]>
+				</when>
+				<otherwise>
+					<![CDATA[ order by ${ORDER_BY_MENU}]]>
+				</otherwise>
+			</choose>
+		</if>
+	</sql>
+	
+	<!-- 查询筛选条件 -->
+	<sql id="where">
+		<where>
+			<if test="id!=null">
+				and  id = #{id}
+			</if>
+			<if test="qyid!=null">
+				and  qyid = #{qyid}
+			</if>
+			<if test="equipmentname!=null">
+				and  equipmentname like  '%${equipmentname}%'
+			</if>
+			<if test="provincename!=null">
+				and  provincename = #{provincename}
+			</if>
+			<if test="cityname!=null">
+				and  cityname = #{cityname}
+			</if>
+			<if test="districtname!=null">
+				and  districtname = #{districtname}
+			</if>
+			<if test="createtimeStart!=null">
+				and  createtime = #{createtimeStart}
+			</if>
+			<if test="createtimeEnd!=null">
+				and  createtime = #{createtimeEnd}
+			</if>
+		</where>
+	</sql>
+	
+	<insert id="insertEquipment" parameterType="com.hanson.model.Equipment" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `pdt_equipment` (
+			`qyid`,
+			`companyname`,
+			`equipmentname`,
+			`provincename`,
+			`cityname`,
+			`districtname`,
+			`address`,
+			`equipmentspec`,
+			`openstoc`,
+			`createtime`,
+			`stocknum`,
+			`bdelete`
+		)
+		VALUES
+		(
+		#{qyid},
+		#{companyname},
+		#{equipmentname},
+		#{provincename},
+		#{cityname},
+		#{districtname},
+		#{address},
+		#{equipmentspec},
+		#{openstoc},
+		now(),
+		#{stocknum},
+		'0'
+		);
+	</insert>
+</mapper>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hanson.mapper.StoreSaleDetailMapper">
+  <sql id="where">
+   <where> 
+     <if test="storeid!=null">
+       <![CDATA[ and sd.storeid = #{storeid} ]]>
+     </if>
+     <if test="orderid!=null">
+       <![CDATA[ and sd.orderid = #{orderid} ]]>
+     </if>
+     <if test="consumetype!=null">
+      <![CDATA[ and sd.consumetype = #{consumetype} ]]>
+     </if>
+   </where>
+  </sql>
+  <select id="getSalesByStoreId" resultType="com.hanson.model.StoreSaleDetail" parameterType="long">
+    select * from vip_store_saledetail where storeid=#{storeid}
+  </select>
+  <select id="SearchStoreSales" parameterType="java.util.Map" resultType="java.util.HashMap">
+     select sd.id,sd.orderid,sd.storeid,sd.consumetype,sd.storeorderid,sd.orderdetail,sd.chargemoney,sd.discount,sd.leftmoney,sd.remark,sd.createtime, uc.companyname 
+      from vip_store_saledetail as sd  left join u_company as uc on sd.storeid=uc.id
+     <include refid="where" /> 
+     limit #{BEGIN_ROW},#{PAGE_SIZE}
+  </select>
+  <select id="SelectCountStoreSales" parameterType="java.util.Map" resultType="long">
+    select count(*) from vip_store_saledetail as sd
+     <include refid="where" /> 
+  </select>
+  <select id="SelectStoreInfo" parameterType="long" resultType="com.hanson.model.Company">
+   select uc.companyname,uc.id,us.leftmoney,us.normalaccount,us.createtime,us.grade
+    from u_storeproperty as us left join u_company as uc on us.companyid=uc.id where uc.id=#{storeid}
+  </select>
+</mapper>

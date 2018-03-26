@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hanson.mapper.StorePropertyMapper">
+     <sql id="where">
+       <where>
+         <if test="companyid!=null">
+           <![CDATA[ and us.companyid = #{companyid} ]]>
+         </if>
+      
+        <if test="companyname!=null">
+           <![CDATA[ and uc.companyname = #{companyname} ]]>
+         </if>
+       </where>
+     </sql>
+     <select id="Findbycompanyid" parameterType="java.lang.Long" resultType="com.hanson.model.StoreProperty">
+       select * from u_storeproperty where companyid=#{companyid}
+     </select> 
+     
+     <insert id="insertStoreProperty" parameterType="com.hanson.model.StoreProperty" useGeneratedKeys="true" keyProperty="id">
+        insert into u_storeproperty
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+             <if test="companyid!=null">
+               companyid,
+             </if>
+             <if test="chargerebate!=null">
+                chargerebate,
+             </if>
+             <if test="chargemoney!=null and chargemoney!=0">
+                chargemoney,
+             </if>
+             <if test="leftmoney!=null and leftmoney!=0">
+               leftmoney,
+             </if>
+             <if test="standardsum!=null and standardsum!=0">
+               standardsum,
+             </if>
+             <if test="normalaccount!=null and normalaccount!=0">
+               normalaccount,
+             </if>
+             <if test="merchantrate!=null">
+               merchantrate,
+             </if>
+             <if test="photoproduct!=null">
+              photoproduct,
+             </if>
+             <if test="photoalbumproduct!=null">
+              photoalbumproduct,
+             </if>
+             <if test="photoframeproduct!=null">
+               photoframeproduct,
+             </if>
+             <if test="createtime!=null">
+               createtime,
+             </if>
+             <if test="updatetime!=null">
+              updatetime,
+             </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="companyid != null "> 
+            	#{companyid,jdbcType=INTEGER},  
+            </if> 
+            <if test="chargerebate!=null">
+               #{chargerebate,jdbcType=DOUBLE},
+            </if>
+            <if test="chargemoney!=null and chargemoney!=0">
+               #{chargemoney,jdbcType=DOUBLE}/100,
+            </if>
+            <if test="leftmoney!=null and leftmoney!=0">
+               #{leftmoney,jdbcType=DOUBLE}/100,
+            </if>
+            <if test="standardsum!=null and standardsum!=0">
+               #{standardsum,jdbcType=DOUBLE}/100,
+            </if>
+            <if test="normalaccount!=null and normalaccount!=0">
+              #{normalaccount,jdbcType=DOUBLE}/100,
+            </if>
+            <if test="merchantrate!=null">
+               #{merchantrate,jdbcType=DOUBLE},
+            </if>
+            <if test="photoproduct!=null">
+              #{photoproduct,jdbcType=INTEGER},
+            </if>
+            <if test="photoalbumproduct!=null">
+              #{photoalbumproduct,jdbcType=INTEGER},
+            </if>
+            <if test="photoframeproduct!=null">
+              #{photoframeproduct,jdbcType=INTEGER},
+            </if>
+            <if test="createtime!=null">
+             #{createtime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updatetime!=null">
+             #{updatetime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+     </insert>
+     
+     <select id="SearchStoreVips" parameterType="java.util.Map" resultType="java.util.HashMap">
+        select us.id as id,us.companyid,us.totalmoney, us.leftmoney,us.grade,uc.companyname from u_storeproperty as  us 
+          left join u_company as uc  on us.companyid=uc.id
+        <include refid="where" /> 
+       <!--  <where>
+        <if test="uc.companyname != null"> 
+            uc.companyname = #{companyname},  
+        </if> 
+        </where> -->
+        limit #{BEGIN_ROW},#{PAGE_SIZE}
+     </select>
+     <select id="SelectCountvips" parameterType="java.util.Map" resultType="long">
+        select count(us.companyid) from u_storeproperty as  us 
+         left join u_company as uc on   us.companyid=uc.id
+      <include refid="where" />  
+     </select>
+     <update id="updatechargeMoney" parameterType="com.hanson.model.StoreProperty">
+       update u_storeproperty
+       <trim prefix="set" suffixOverrides=",">
+        <if test="totalmoney!=null">
+          totalmoney=#{totalmoney},
+        </if>
+        <if test="chargemoney!=null">
+          chargemoney=#{chargemoney},
+        </if>
+        <if test="leftmoney!=null">
+           leftmoney=#{leftmoney},
+        </if>
+       </trim>
+       WHERE companyid=#{companyid}
+     </update>
+     <update id="setauthority" parameterType="com.hanson.model.StoreProperty">
+        update u_storeproperty
+        <trim prefix="set" suffixOverrides=",">
+          <if test="photoproduct != null">
+              photoproduct = #{photoproduct}, 
+          </if>
+          <if test="photoproduct == null">
+              photoproduct = 0, 
+          </if>
+          <if test="photoalbumproduct!=null">
+             photoalbumproduct=#{photoalbumproduct},
+          </if>
+          <if test="merchantrate!=null">
+            merchantrate=#{merchantrate}/100,
+          </if>
+          <if test="photoalbumproduct==null">
+             photoalbumproduct=0,
+          </if>
+          <if test="photoframeproduct!=null">
+            photoframeproduct=#{photoframeproduct},
+          </if>
+          <if test="photoframeproduct==null">
+            photoframeproduct=0,
+          </if>
+          <if test="standardsum!=null">
+            standardsum=#{standardsum}*100,
+          </if>
+        </trim>
+        WHERE companyid=#{companyid}
+     </update>
+</mapper>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hanson.mapper.StoreVipMapper">
+  <insert  id="InsertVipRule" parameterType="com.hanson.model.StoreVip" useGeneratedKeys="true" keyProperty="id">
+   insert into vip_storerule_table 
+  <trim prefix="(" suffix=")" suffixOverrides=","> 
+    <if test="chargemoney != null">
+     chargemoney,
+    </if>  
+    <if test="grade!=null">
+     grade,
+    </if>
+    <if test="discount!=null">
+      discount,
+    </if>
+    <if test="createtime!=null">
+      createtime,
+    </if>
+  </trim>
+  <trim prefix="values (" suffix=")" suffixOverrides=","> 
+    <if test="chargemoney!=null">
+       {chargemoney,jdbcType=INTEGER},
+    </if>
+    <if test="grade!=null">
+       {grade,jdbcType=INTEGER},
+    </if>
+    <if test="discount!=null">
+       {discount,jdbcType=DOUBLE},
+    </if>
+    <if test="createtime!=null">
+       {createtime,jdbcType=TIMESTAMP},
+    </if>
+  </trim>
+  </insert>
+  <update id="UpdateStoreVip" parameterType="com.hanson.model.StoreVip">
+      update vip_storerule_table  
+       <trim prefix="set" suffixOverrides=",">
+          <if test="chargemoney!=null">
+            chargemoney=#{chargemoney}*100,
+          </if>
+          <if test="grade!=null">
+            grade=#{grade},
+          </if>
+          <if test="discount!=null">
+            discount=#{discount}/10,
+          </if>
+          <if test="lastmodifiedtime!=null">
+             lastmodifiedtime=#{lastmodifiedtime},
+          </if>
+       </trim>
+       WHERE id=#{id}
+  </update>
+  <select id="SelectStoreVip"  resultType="com.hanson.model.StoreVip">
+    select * from  vip_storerule_table 
+  </select>
+</mapper>

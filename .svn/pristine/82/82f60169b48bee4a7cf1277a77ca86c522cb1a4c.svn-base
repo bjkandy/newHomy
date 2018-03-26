@@ -1,0 +1,81 @@
+package com.hanson.service;
+
+import java.util.List;
+import java.util.Map;
+
+import com.hanson.common.util.Page;
+import com.hanson.model.Product;
+import com.hanson.model.ProductVO;
+
+public interface ProductService {
+	
+	/**
+	 * 精确查找-根据QYID
+	 * @param id
+	 * @return
+	 */
+	public Product findUniqueByQyId(Long id);
+	
+	
+	/**
+	 * 精确查找-根据ID
+	 * @param id
+	 * @return
+	 */
+	public Product findUniqueById(Long id);
+	
+	public List<ProductVO> findPhotoFrame();
+
+	public List<ProductVO> FindalbumProduct();
+	public List<ProductVO>  FindStoreProductbywhere(Map<String,Object> map);
+	public ProductVO SelectProductByName(Map<String,Object> map);
+	/**
+	 * 创建/更新
+	 * @param bean
+	 * @throws Exception
+	 */
+	public void save(Product bean) throws Exception;
+	
+	/**
+	 * 分页查询产品列表
+	 * @param page
+	 * @param map
+	 * @return
+	 */
+	public Page<Map<String, Object>> findProductPage(Page<Map<String, Object>> page, Map<String, Object> map);
+
+	/**
+	 * 删除产品
+	 * @param product
+	 */
+	public void deleteProduct(Product product);
+	
+	/**
+	 * 保存产品
+	 * @param productVO
+	 */
+	public Integer saveProduct(ProductVO productVO);
+	
+	/**
+	 * 根据ID查找产品
+	 * @param productVO
+	 * @return
+	 */
+	public ProductVO findProductById(ProductVO productVO);
+	
+	/**
+	 * 修改产品
+	 * @param productVO
+	 */
+	public void updateProduct(ProductVO productVO);
+	
+	/**
+	 * 导出产品数据excel
+	 * @param data
+	 * @return
+	 */
+	public byte[] productExcel(Map<String,Object> data);
+	
+	
+
+}

@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hanson.mapper.UserMapper">
+
+  	<!-- 插入-对象 -->
+  	<insert id="insert" parameterType="com.hanson.model.User" useGeneratedKeys="true" keyProperty="id" >
+            INSERT INTO users  
+            <trim prefix="(" suffix=")" suffixOverrides=",">  
+                <if test="loginName != null and loginName != ''">  
+                    `LOGIN_NAME`,  
+                </if>  
+                <if test="password != null and password != ''">  
+                    `PASSWORD`,  
+                </if>  
+            	<if test="name != null and name != ''">  
+                    `NAME`,  
+                </if>  
+                <if test="email != null and email != ''">  
+                    `EMAIL`,  
+                </if>  
+                <if test="locked != null and locked != ''">  
+                    `locked`,  
+                </if>  
+                <if test="usertype != null and usertype != ''">  
+                    `usertype`,  
+                </if>  
+                <if test="qyid != null and qyid != ''">  
+                    `qyid`,  
+                </if>  
+                <if test="activecode != null and activecode != ''">  
+                    `activecode`,  
+                </if>  
+                <if test="sex != null and sex != ''">  
+                    `sex`,  
+                </if>  
+                <if test="birthday != null and birthday != ''">  
+                    `birthday`,  
+                </if>  
+                <if test="address != null and address != ''">  
+                    `address`,  
+                </if>  
+                <if test="remark != null and remark != ''">  
+                    `remark`,  
+                </if>  
+                <if test="useravatar != null and useravatar != ''">  
+                    `useravatar`,  
+                </if>  
+                <if test="validstr != null and validstr != ''">  
+                    `validstr`,  
+                </if>  
+                <if test="phone != null and phone != ''">  
+                    `phone`,  
+                </if>  
+            </trim>  
+            <trim prefix="values (" suffix=")" suffixOverrides=","> 
+            	 <if test="loginName != null and loginName != ''">  
+                    #{loginName,jdbcType=VARCHAR},   
+                </if>  
+                <if test="password != null and password != ''">  
+                    #{password,jdbcType=VARCHAR},   
+                </if>  
+            	<if test="name != null and name != ''">  
+                    #{name,jdbcType=VARCHAR},   
+                </if>  
+                <if test="email != null and email != ''">  
+                    #{email,jdbcType=VARCHAR},   
+                </if>  
+                <if test="locked != null and locked != ''">  
+                    #{locked,jdbcType=VARCHAR},   
+                </if>  
+                <if test="usertype != null and usertype != ''">  
+                    #{usertype,jdbcType=VARCHAR},   
+                </if>  
+                <if test="qyid != null and qyid != ''">  
+                    #{qyid,jdbcType=BIGINT},   
+                </if>  
+                <if test="activecode != null and activecode != ''">  
+                    #{activecode,jdbcType=VARCHAR},   
+                </if>  
+                <if test="sex != null and sex != ''">  
+                    #{sex,jdbcType=INTEGER},   
+                </if>  
+                <if test="birthday != null and birthday != ''">  
+                    #{birthday,jdbcType=TIMESTAMP},   
+                </if>  
+                <if test="address != null and address != ''">  
+                    #{address,jdbcType=VARCHAR},   
+                </if>  
+                <if test="remark != null and remark != ''">  
+                    #{remark,jdbcType=VARCHAR},   
+                </if>  
+                <if test="useravatar != null and useravatar != ''">  
+                    #{useravatar,jdbcType=VARCHAR},   
+                </if>  
+                <if test="validstr != null and validstr != ''">  
+                    #{validstr,jdbcType=VARCHAR},   
+                </if>  
+                <if test="phone != null and phone != ''">  
+                    #{phone,jdbcType=VARCHAR},   
+                </if>  
+            </trim>  
+    </insert>
+	
+	<update id="updateQyUser" parameterType="java.util.Map">
+		 UPDATE users
+		 <trim prefix="set" suffixOverrides=",">
+		 		<if test="loginName != null and loginName != ''">  
+                   LOGIN_NAME = #{loginName},   
+                </if>  
+                <if test="password != null and password != ''">  
+                    password = #{password},   
+                </if>  
+            	<if test="name != null and name != ''">  
+                    name = #{name},   
+                </if>  
+                <if test="email != null and email != ''">  
+                    email = #{email},   
+                </if>  
+                <if test="locked != null and locked != ''">  
+                    locked = #{locked},   
+                </if>  
+                <if test="usertype != null and usertype != ''">  
+                   usertype = #{usertype},   
+                </if>  
+                <if test="qyid != null and qyid != ''">  
+                    qyid = #{qyid},   
+                </if>  
+                <if test="activecode != null and activecode != ''">  
+                    activecode = #{activecode},   
+                </if>  
+                <if test="sex != null and sex != ''">  
+                    sex = #{sex},   
+                </if>  
+                <if test="birthday != null and birthday != ''">  
+                    birthday = #{birthday},   
+                </if>  
+                <if test="address != null and address != ''">  
+                   	address =  #{address},   
+                </if>  
+                <if test="remark != null and remark != ''">  
+                    remark = #{remark},   
+                </if>  
+                <if test="useravatar != null and useravatar != ''">  
+                   	useravatar = #{useravatar},   
+                </if>  
+                <if test="validstr != null and validstr != ''">  
+                   validstr = #{validstr},   
+                </if>  
+                <if test="phone != null and phone != ''">  
+                    phone =#{phone},   
+                </if> 
+		 </trim>
+		 WHERE qyid=#{qyid}
+	</update>
+	
+	<!-- 分页查询-根据企业名称模糊查询 -->
+  	<select id="isLoginname" parameterType="java.lang.String" resultType="java.lang.Integer">
+  		<![CDATA[ select count(*) from  users where LOGIN_NAME = #{0} ]]>
+  	</select>
+</mapper>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hanson.mapper.RobotreplyMapper">
+	
+  	<select id="findRobotreplyList" parameterType="java.lang.String" resultType="com.hanson.model.Robotreply">
+	    select * from msg_robotreply where  qyid = 103 and type = 0
+	    <if test="rulename != null">
+	    	 and rulename  like CONCAT('%',#{rulename},'%') or keyword like CONCAT('%',#{rulename},'%')
+	    </if>
+  	</select>
+  	
+  	<insert id="insertKey" parameterType="com.hanson.model.Robotreply">
+  		INSERT INTO `msg_robotreply` ( `qyid`, `rulename`, `keyword`, `replycontent`, `matchingkeywordtype`, `type` )
+		VALUES (103, #{rulename}, #{keyword}, #{replycontent}, #{matchingkeywordtype}, 0);
+  	</insert>
+  	
+  	<update id="editKey" parameterType="com.hanson.model.Robotreply">
+  		UPDATE 
+  			`msg_robotreply` 
+		SET 
+			`qyid` = 103,
+			`rulename` = #{rulename},
+			`keyword` = #{keyword},
+			`replycontent` = #{replycontent},
+			`matchingkeywordtype` = #{matchingkeywordtype},
+			`type` = 0 
+		WHERE
+			`id` = #{id};
+  	</update>
+  	
+  	<delete id="deleteKey" parameterType="java.lang.Integer">
+  		delete from msg_robotreply where `id` = #{0};
+  	</delete>
+  	
+  	<select id="queryKeyDetail" resultType="com.hanson.model.Robotreply">
+  		select * from msg_robotreply where  id = #{0}
+  	</select>
+  	
+  	<select id="receiveTheMessage" resultType="com.hanson.model.Robotreply">
+  		select * from msg_robotreply where  type = 1
+  	</select>
+  	
+  	<update id="editReceiveTheMessage" parameterType="com.hanson.model.Robotreply">
+  		UPDATE 
+  			`msg_robotreply` 
+		SET 
+			`qyid` = 103,
+			`replycontent` = #{replycontent},
+			`type` = 1
+		WHERE
+			`type` = 1
+  	</update>
+  	
+  	<select id="emoticonList" resultType="com.hanson.model.Emoticon">
+  		select * from emoticon
+  	</select>
+</mapper>

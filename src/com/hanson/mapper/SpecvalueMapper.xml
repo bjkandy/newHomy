@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hanson.mapper.SpecvalueMapper">
+	
+	<select id="findUniqueByPid" resultType="com.hanson.model.Specvalue" parameterType="java.lang.Long">
+		 select 
+		 	id,
+			productid,
+			oldprice,
+			truncate(price/100, 2) as price,
+			inventory,
+			isdefault,
+			bdelete,
+			isvalid,
+			salecount,
+			productioncost,
+			size,
+			specinfo,
+			color,
+			original,
+			thumbnail,
+			width,
+			height, 
+			truncate(packageprice/100, 2) as packageprice,
+			plasticprice,
+			plastic,
+			sort,
+			reserve2,
+			reserve3,
+			reserve4,
+			storeproductcost,
+			specification
+		 from  pdt_specvalue where productid = #{0}
+	</select>
+	
+	<!-- 插入-对象 -->
+  	<insert id="save" parameterType="com.hanson.model.Specvalue" useGeneratedKeys="true" keyProperty="id">
+            INSERT INTO pdt_specvalue  
+            <trim prefix="(" suffix=")" suffixOverrides=",">  
+                <if test="productid != null">  
+                    `productid`,  
+                </if>  
+            	<if test="oldprice != null">  
+                    `oldprice`,  
+                </if>  
+                <if test="price != null">  
+                    `price`,  
+                </if>  
+                <if test="inventory != null">  
+                    `inventory`,  
+                </if>  
+                <if test="isdefault != null">  
+                    `isdefault`,  
+                </if>  
+                <if test="bdelete != null">  
+                    `bdelete`,  
+                </if>  
+                <if test="isvalid != null">  
+                    `isvalid`,  
+                </if>  
+                <if test="salecount != null">  
+                    `salecount`,  
+                </if>
+                <if test="productioncost != null">  
+                    `productioncost`,  
+                </if>
+                <if test="size != null">  
+                    `size`,  
+                </if>
+                <if test="specinfo != null">  
+                    `specinfo`,  
+                </if>
+                <if test="color != null">  
+                    `color`,  
+                </if>
+                <if test="original != null">  
+                    `original`,  
+                </if>
+                <if test="thumbnail != null">  
+                    `thumbnail`,  
+                </if>
+                <if test="width != null">  
+                    `width`,  
+                </if>
+                <if test="height != null">  
+                    `height`,  
+                </if>
+                <if test="packageprice != null">  
+                    `packageprice`,  
+                </if>
+            </trim>  
+            <trim prefix="values (" suffix=")" suffixOverrides=","> 
+            
+            	<if test="productid != null">  
+                    #{productid,jdbcType=BIGINT},  
+                </if>  
+            	<if test="oldprice != null">  
+                    #{oldprice,jdbcType=BIGINT},  
+                </if>  
+                <if test="price != null">  
+                    #{price,jdbcType=BIGINT},  
+                </if>  
+                <if test="inventory != null">  
+                    #{inventory,jdbcType=INTEGER},  
+                </if>  
+                <if test="isdefault != null">  
+                    #{isdefault,jdbcType=VARCHAR},  
+                </if>  
+                <if test="bdelete != null">  
+                    #{bdelete,jdbcType=INTEGER},  
+                </if>  
+                <if test="isvalid != null">  
+                    #{isvalid,jdbcType=INTEGER},  
+                </if>  
+                <if test="salecount != null">  
+                    #{salecount,jdbcType=INTEGER},  
+                </if>
+                <if test="productioncost != null">  
+                    #{productioncost,jdbcType=DOUBLE},
+                </if>
+            	<if test="size != null">  
+                    #{size,jdbcType=VARCHAR},
+                </if>
+                <if test="specinfo != null">  
+                    #{specinfo,jdbcType=VARCHAR},
+                </if>
+                <if test="color != null">  
+                    #{color,jdbcType=VARCHAR},
+                </if>
+                <if test="original != null">  
+                    #{original,jdbcType=VARCHAR},
+                </if>
+                <if test="thumbnail != null">  
+                    #{thumbnail,jdbcType=VARCHAR},
+                </if>
+                <if test="width != null">  
+                    #{width,jdbcType=INTEGER},
+                </if>
+                <if test="height != null">  
+                    #{height,jdbcType=INTEGER},
+                </if>
+                <if test="packageprice != null">  
+                    #{packageprice,jdbcType=INTEGER},
+                </if>
+            </trim>  
+    </insert>
+    
+    <update id="updateBatch"  parameterType="java.util.List">  
+    	<foreach collection="list" item="item" index="index" open="" close="" separator=";">
+	        update pdt_specvalue
+	        <set>
+	            productioncost = ${item.productioncost}
+	        </set>
+	        where id = ${item.id}
+    	</foreach>      
+	</update>
+	
+	<update id="updateproductBatch"  parameterType="java.util.Map">  
+	        update pdt_specvalue
+	        <trim prefix="set" suffixOverrides=",">
+	          <if test="storeproductcost!=null">
+	            storeproductcost=#{storeproductcost},
+	          </if>
+	        </trim>
+	        WHERE id=#{id}
+	</update>
+	<!-- 更新产品规格属性 -->
+	<update id="updateSpecvalue" parameterType="com.hanson.model.Specvalue">
+		update pdt_specvalue
+		 <trim prefix="set" suffixOverrides=",">
+		 		<if test="productid != null"> 
+            		productid = #{productid},  
+                </if>  
+                <if test="oldprice != null">  
+                   oldprice=  #{oldprice},  
+                </if>  
+                <if test="price != null">  
+                   price = #{price},
+                </if>  
+                <if test="inventory != null">  
+                    inventory = #{inventory},
+                </if>  
+                <if test="isdefault != null">  
+                    isdefault = #{isdefault}, 
+                </if>  
+                <if test="bdelete != null">  
+                    bdelete = #{bdelete}, 
+                </if>  
+                <if test="isvalid != null">  
+                    isvalid = #{isvalid}, 
+                </if>  
+                <if test="salecount != null">  
+                     salecount = #{salecount}, 
+                </if>  
+                <if test="productioncost != null">  
+                     productioncost = #{productioncost},  
+                </if>  
+                <if test="size != null">  
+                    size = #{size}, 
+                </if>  
+                <if test="specinfo != null">  
+                    specinfo = #{specinfo}, 
+                </if> 
+                <if test="color != null">  
+                    color = #{color}, 
+                </if> 
+                <if test="original != null">  
+                    original = #{original}, 
+                </if> 
+                
+                <if test="thumbnail != null">  
+                    thumbnail = #{thumbnail}, 
+                </if> 
+                <if test="width != null">  
+                    width = #{width}, 
+                </if> 
+                <if test="height != null">  
+                    height = #{height}, 
+                </if> 
+                <if test="packageprice != null">  
+                    packageprice = #{packageprice}, 
+                </if> 
+                
+                <if test="plasticprice != null">  
+                    plasticprice = #{plasticprice}, 
+                </if> 
+                <if test="plastic != null">  
+                    plastic = #{plastic}, 
+                </if> 
+                
+		 </trim>
+		 WHERE id=#{id}
+	</update>
+	
+	<delete id="deleteSpecvalue" parameterType="com.hanson.model.Specvalue">
+		delete from pdt_specvalue where id = #{id}
+	</delete>
+</mapper>

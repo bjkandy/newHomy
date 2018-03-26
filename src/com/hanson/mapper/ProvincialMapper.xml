@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hanson.mapper.ProvincialMapper">
+	
+	
+	<!-- 获取所有省份 -->
+  	<select id="findProvinceList" resultType="com.hanson.model.Province">
+	    select * from sys_province where bdelete = 0 order by id asc 
+  	</select>
+  	
+  	<!-- 市查询-根据省ID -->
+  	<select id="findCityList" resultType="com.hanson.model.City" parameterType="java.lang.String">
+	    select * from sys_city where bdelete = 0 and provinceid = #{0} order by id asc 
+  	</select>
+  	
+  	<select id="GetcityModel" resultType="com.hanson.model.City" parameterType="java.lang.Integer">
+  	   select * from sys_city where ID=#{id}
+  	</select>
+  	
+  	<!-- 所属省份查询-根据城市ID -->
+  	<select id="findProvinceByCid" resultType="com.hanson.model.Province" parameterType="java.lang.String">
+	    select sysp.* from sys_city as sysc 
+	    left join sys_province as sysp on sysc.provinceid = sysp.id
+	    where sysc.bdelete = 0 and sysc.id = #{0}
+  	</select>
+  	
+  	
+</mapper>

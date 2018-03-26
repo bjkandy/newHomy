@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+	<!-- container-fluid -->
+	<head>
+		<title>汇美微传即时管理系统</title>
+		<meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="stylesheet" href="css/bootstrap.min.css" />
+		<link rel="stylesheet" href="css/bootstrap-responsive.min.css" />
+		<link rel="stylesheet" href="css/fullcalendar.css" />	
+		<link rel="stylesheet" href="css/uniform.css" />
+		<link rel="stylesheet" href="css/select2.css" />	
+		<link rel="stylesheet" href="css/unicorn.main.css" />
+		<link rel="stylesheet" href="css/unicorn.grey.css" class="skin-color" />
+		
+
+        <script src="js/excanvas.min.js"></script>
+        <script src="js/jquery.min.js"></script>
+        <script src="js/jquery.ui.custom.js"></script>
+        <script src="js/bootstrap.min.js"></script>
+        <script src="js/jquery.flot.min.js"></script>
+        <script src="js/jquery.flot.resize.min.js"></script>
+        <script src="js/jquery.peity.min.js"></script>
+        <script src="js/fullcalendar.min.js"></script>
+        <script src="js/unicorn.js"></script>
+        <script src="js/unicorn.dashboard.js"></script>
+	    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	</head>
+	<body>	
+		<div id="header">
+			<h1 style="font-size: 18px;color: #fff;background:none;line-height: 30px;">汇美微传即时管理系统</h1>		
+		</div>
+		<!-- 搜索 -->
+		<!-- <div id="search">
+			<input type="text" placeholder="Search here..." /><button type="submit" class="tip-right" title="Search"><i class="icon-search icon-white"></i></button>
+		</div> -->
+		<div id="user-nav" class="navbar navbar-inverse">
+            <ul class="nav btn-group">
+                <li class="btn btn-inverse"><a title="" href="login.jsp"><i class="icon icon-user"></i> <span class="text">个人中心</span></a></li>
+                 <!--<li class="btn btn-inverse dropdown" id="menu-messages"><a href="login.jsp" data-toggle="dropdown" data-target="#menu-messages" class="dropdown-toggle"><i class="icon icon-envelope"></i> <span class="text">Messages</span> <span class="label label-important">5</span> <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li><a class="sAdd" title="" href="#">new message</a></li>
+                        <li><a class="sInbox" title="" href="#">inbox</a></li>
+                        <li><a class="sOutbox" title="" href="#">outbox</a></li>
+                        <li><a class="sTrash" title="" href="#">trash</a></li>
+                    </ul>
+                </li> -->
+                <li class="btn btn-inverse"><a title="" href="login.jsp"><i class="icon icon-cog"></i> <span class="text">设置</span></a></li>
+                <li class="btn btn-inverse"><a title="" href="login.jsp"><i class="icon icon-share-alt"></i> <span class="text">退出登录</span></a></li>
+            </ul>
+        </div>
+            
+		<div id="sidebar">
+			<ul>
+				<li class="active"><a href="index.html"><i class="icon icon-home"></i> <span>首页</span></a></li>
+				<li class="submenu">
+					<a href="login.jsp"><i class="icon icon-th-list"></i> <span>企业信息管理</span> <span class="label">4</span></a>
+					<ul>
+						<li><a href="merchantData.html">企业管理</a></li>
+						<li><a href="hysh.html">活跃商户</a></li>
+						<li><a href="shsjtj.html">商户数据统计</a></li>
+                        <li><a href="shzlsjtj.html">商户增量数据统计</a></li>
+					</ul>
+				</li>
+                <li class="submenu">
+					<a href="login.jsp"><i class="icon icon-th-list"></i> <span>订单管理</span> <span class="label">1</span></a>
+					<ul>
+						<li><a href="ddgl.html">订单管理</a></li>
+					</ul>
+				</li>
+                <li class="submenu">
+					<a href="login.jsp"><i class="icon icon-th-list"></i> <span>预约管理</span> <span class="label">3</span></a>
+					<ul>
+						<li><a href="yyck.html">预约查看</a></li>
+						<li><a href="fwxm.html">服务项目</a></li>
+						<li><a href="sjlb.html">时间列表</a></li>
+					</ul>
+				</li>
+                <li class="submenu">
+					<a href="login.jsp"><i class="icon icon-th-list"></i> <span>返现管理</span> <span class="label">1</span></a>
+					<ul>
+						<li><a href="fxgl.html">返现管理</a></li>
+					</ul>
+				</li>
+				<li class="submenu">
+					<a href="login.jsp"><i class="icon icon-th-list"></i> <span>系统菜单</span> <span class="label">1</span></a>
+					<ul>
+						<li><a href="b.html">用户管理</a></li>
+						<li><a href="b.html">角色管理</a></li>
+						<li><a href="b.html">权限项管理</a></li>
+					</ul>
+				</li>
+			</ul>
+		
+		</div>
+		
+		<div id="style-switcher">
+			<i class="icon-arrow-left icon-white"></i>
+			<span>Style:</span>
+			<a href="#grey" style="background-color: #555555;border-color: #aaaaaa;"></a>
+			<a href="#blue" style="background-color: #2D2F57;"></a>
+			<a href="#red" style="background-color: #673232;"></a>
+		</div>
+		
+		<div id="content">
+
+		</div>
+	</body>
+	<script type="text/javascript">
+		$(".submenu ul a").click(function(e){
+			e.preventDefault();
+			var url = $(this).attr("href");
+			console.log(url);
+			$("#content").empty();
+			$("#content").load(url);
+		})
+	</script>
+</html>

@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hanson.mapper.OrderdetailMapper">
+	
+	<select id="findListByOid" resultType="com.hanson.model.odr.Orderdetail" parameterType="java.lang.String">
+		 select * from  odr_orderdetail where orderid = #{0}
+	</select>
+	
+	<select id="orderDetailFrame" resultType="Map" parameterType="Map">
+	
+			           	SELECT
+						  ifnull(odt.producttype,'') as producttype,
+						  odt.productid as productid,
+						  ifnull(pdt.name,'') as name,
+						  ifnull(pdt.mainimg,'') as mainimg,
+						  ps.size as size,
+						  ifnull(ps.color,'') as color,
+						  odt.price as price,
+						  odt.number as number,
+						  ifnull(odt.productname,'') as productname
+					FROM
+						odr_orderdetail AS odt LEFT JOIN
+						pdt_product AS pdt ON(pdt.ID = odt.productid)
+						 LEFT JOIN pdt_specvalue AS ps ON(odt.specid = ps.ID)
+					WHERE
+						    odt.orderid = #{orderid}
+						AND odt.producttype = 20
+	</select>
+	
+	<select id="downloadOrder" resultType="Map" parameterType="String">
+					 SELECT
+						od.orderid AS orderid,
+						od.cuname AS cuname,
+						od.cuid AS cuid,
+						CONVERT (od.createdate, date) AS createdate,
+						odt.productid as productid,
+						ifnull(odt.size,'') AS size,
+						ifnull(ps.specinfo,'') AS spec,
+						ifnull(odt.plastic,0) AS plastic,
+						odt.ID AS id,
+          			    ifnull(pdin.pageNum,0) as pageNum,
+						ifnull(bum.imagePath,'') as imagePath,
+						ifnull(bum.rank,4) as rank,
+						ifnull(bum.pageIndex,0) as pageIndex,
+						ifnull(odt.number,0) AS number,
+						ifnull(odt.proimg,'') AS proimg,
+						ifnull(pdt.mainimg,'') as mainimg,
+						pdt.producttype as producttype,
+						pdt.name AS name,
+						ifnull(ps.color,'') AS color
+					FROM
+						odr_orderdetail AS odt LEFT JOIN
+						odr_order AS od ON (odt.orderid = od.orderid) LEFT JOIN 
+						ablum_detail as bum ON (odt.ID=bum.detailID) LEFT JOIN
+						pdt_product AS pdt ON (odt.productid = pdt.ID) LEFT JOIN
+						pdt_productinfo as pdin ON (odt.productid = pdin.productid) LEFT JOIN
+						pdt_specvalue AS ps ON (odt.specid = ps.id)
+					WHERE
+						od.orderid = #{orderid}
+	</select>
+	
+	<select id="orderDetailPhoto" resultType="Map" parameterType="Map">
+	
+				           SELECT
+								ifnull(odt.producttype,'') as producttype,
+								odt.productid as productid,
+								ifnull(pdt.name,'') AS name,
+								ifnull(pdt.mainimg,'') AS mainimg,
+								ifnull(ps.specinfo,'') AS specinfo,
+								ps.size AS size,
+								odt.plastic AS plastic,
+								odt.price AS price,
+								sum(odt.number) AS number
+							FROM
+								odr_orderdetail AS odt LEFT JOIN
+								pdt_product AS pdt ON(pdt.ID = odt.productid)
+								 LEFT JOIN pdt_specvalue AS ps ON(odt.specid = ps.ID)
+							WHERE
+								odt.orderid = #{orderid}
+							AND (odt.producttype = 10 or odt.producttype is null)
+							GROUP BY
+								ps.specinfo,
+								ps.size,
+								odt.plastic
+	</select>
+	
+	<select id="orderDetail" resultType="Map" parameterType="Map">
+	
+				       SELECT
+						convert(od.createdate,date) AS createdate,
+						od.orderid AS orderid,
+						od.totalprice AS totalprice,
+						od.orderstatus AS orderstatus,
+						od.paystatus AS paystatus,
+						od.paytype as paytype,
+						ifnull(osp.shipname,'') AS shipname,
+						ifnull(osp.phone,'') AS phone,
+						ifnull(osp.province,'') AS province,
+						ifnull(osp.city,'') AS city,
+						ifnull(osp.area,'') AS area,
+						ifnull(osp.expressno,'') as expressno,
+						ifnull(osp.shipaddress,'') AS shipaddress,
+						od.paytype AS paytype,
+						od.expresstype AS expresstype,
+						(
+							od.totalprice - od.productotallprice
+						) AS postage,
+						ifnull(od.remark,'') AS remark,
+						ifnull(osp.ExpressCompanyName,'') as ExpressCompanyName
+					FROM
+						odr_order AS od,
+						odr_ordership AS osp
+					WHERE 
+						   	 od.orderid= #{orderid}
+				 		 and od.shipid=osp.ID
+	</select>
+</mapper>

@@ -1,0 +1,581 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hanson.mapper.TxjsMapper">
+
+	<resultMap id="txjsResultMap" type="com.hanson.model.odr.Txjs">   
+        <id property="id" column="id"/>  
+        <result property="qyid" column="qyid"/>
+        <result property="companyname" column="companyname"/>
+        <result property="amount" column="amount"/>
+        <result property="ordernumber" column="ordernumber"/>
+        <result property="status" column="status"/>
+        <result property="checkStatus" column="checkStatus"/> 
+        <result property="createdate" column="createdate"/>     
+       	<result property="finishdate" column="finishdate"/>    
+     </resultMap>  
+
+	<select id="getTxCount" resultType="String" parameterType="Map">
+						SELECT
+							COUNT(1) count
+						FROM
+							odr_txjs AS tx,
+							u_company AS uc
+						WHERE
+						    tx.qyid = uc.id 
+					    <if test="merchantid != null and merchantid != ''">
+							and tx.qyid = #{qyid}
+						</if>
+						<if test="companyname != null and companyname != ''">
+							AND uc.companyname = #{companyname}
+						</if>
+						<if test="status != null and status != ''">
+							AND tx. STATUS = #{status}
+						</if>
+						<if test="txStartTime != null and txStartTime != ''">
+						    AND convert(od.createdate,date)	>=#{txStartTime}	       
+					    </if>
+					    <if test="txEndTime != null and txEndTime != ''">
+						    AND #{txEndTime} >= convert(od.createdate,date) 	       
+					    </if>
+					    <if test="rebeatStartTime != null and rebeatStartTime != ''">
+						    AND convert(od.createdate,date)	>=#{rebeatStartTime}	       
+					    </if>
+					    <if test="rebeatEndTime != null and rebeatEndTime != ''">
+						    AND #{rebeatEndTime} >= convert(od.finishdate,date) 	       
+					    </if>
+	</select>
+	
+	<select id="getTxjs" resultType="Map" parameterType="Map">
+					SELECT
+						tx.ID AS ID,
+						tx.qyid AS qyid,
+						uc.companyname AS companyname,
+						tx.amount AS amount,
+						od.ordernum AS ordernum,
+						tx.status AS status,
+						tx.createdate AS createdate,
+						tx.finishdate AS finishdate
+					FROM
+						odr_txjs AS tx,
+						u_company AS uc,
+						(
+							SELECT
+								COUNT(1) AS ordernum
+							FROM
+								odr_txjs AS tx,
+								u_company AS uc,
+								fx_frrecord AS fx
+							WHERE
+								tx.ID = fx.txid
+							AND tx.qyid = uc.id
+							<if test="merchantid != null and merchantid != ''">
+								and tx.qyid = #{qyid}
+							</if>
+							<if test="companyname != null and companyname != ''">
+								AND uc.companyname = #{companyname}
+							</if>
+							<if test="status != null and status != ''">
+								AND tx. STATUS = #{status}
+							</if>
+							<if test="txStartTime != null and txStartTime != ''">
+							    AND convert(od.createdate,date)	>=#{txStartTime}	       
+						    </if>
+						    <if test="txEndTime != null and txEndTime != ''">
+							    AND #{txEndTime} >= convert(od.createdate,date) 	       
+						    </if>
+						    <if test="rebeatStartTime != null and rebeatStartTime != ''">
+							    AND convert(od.createdate,date)	>=#{rebeatStartTime}	       
+						    </if>
+						    <if test="rebeatEndTime != null and rebeatEndTime != ''">
+							    AND #{rebeatEndTime} >= convert(od.finishdate,date) 	       
+						    </if>
+							GROUP BY
+								fx.orderid
+						) AS od
+					WHERE
+							tx.qyid = uc.id 
+					    <if test="merchantid != null and merchantid != ''">
+							and tx.qyid = #{qyid}
+						</if>
+						<if test="companyname != null and companyname != ''">
+							AND uc.companyname = #{companyname}
+						</if>
+						<if test="status != null and status != ''">
+							AND tx. STATUS = #{status}
+						</if>
+						<if test="txStartTime != null and txStartTime != ''">
+						    AND convert(od.createdate,date)	>=#{txStartTime}	       
+					    </if>
+					    <if test="txEndTime != null and txEndTime != ''">
+						    AND #{txEndTime} >= convert(od.createdate,date) 	       
+					    </if>
+					    <if test="rebeatStartTime != null and rebeatStartTime != ''">
+						    AND convert(od.createdate,date)	>=#{rebeatStartTime}	       
+					    </if>
+					    <if test="rebeatEndTime != null and rebeatEndTime != ''">
+						    AND #{rebeatEndTime} >= convert(od.finishdate,date) 	       
+					    </if>
+					LIMIT #{startLin},#{pageSize}
+	</select>
+	
+	<select id="downloadTx" resultType="Map" parameterType="Map">
+					SELECT
+						tx.ID AS ID,
+						tx.qyid AS qyid,
+						uc.companyname AS companyname,
+						tx.amount AS amount,
+						od.ordernum AS ordernum,
+						tx.status AS status,
+						tx.createdate AS createdate,
+						tx.finishdate AS finishdate
+					FROM
+						odr_txjs AS tx,
+						u_company AS uc,
+						(
+							SELECT
+								COUNT(1) AS ordernum
+							FROM
+								odr_txjs AS tx,
+								u_company AS uc,
+								fx_frrecord AS fx
+							WHERE
+								tx.ID = fx.txid
+							AND tx.qyid = uc.id
+							<if test="merchantid != null and merchantid != ''">
+								and tx.qyid = #{qyid}
+							</if>
+							<if test="companyname != null and companyname != ''">
+								AND uc.companyname = #{companyname}
+							</if>
+							<if test="status != null and status != ''">
+								AND tx. STATUS = #{status}
+							</if>
+							<if test="txStartTime != null and txStartTime != ''">
+							    AND convert(od.createdate,date)	>=#{txStartTime}	       
+						    </if>
+						    <if test="txEndTime != null and txEndTime != ''">
+							    AND #{txEndTime} >= convert(od.createdate,date) 	       
+						    </if>
+						    <if test="rebeatStartTime != null and rebeatStartTime != ''">
+							    AND convert(od.createdate,date)	>=#{rebeatStartTime}	       
+						    </if>
+						    <if test="rebeatEndTime != null and rebeatEndTime != ''">
+							    AND #{rebeatEndTime} >= convert(od.finishdate,date) 	       
+						    </if>
+							GROUP BY
+								fx.orderid
+						) AS od
+					WHERE
+							tx.qyid = uc.id 
+					    <if test="merchantid != null and merchantid != ''">
+							and tx.qyid = #{qyid}
+						</if>
+						<if test="companyname != null and companyname != ''">
+							AND uc.companyname = #{companyname}
+						</if>
+						<if test="status != null and status != ''">
+							AND tx. STATUS = #{status}
+						</if>
+						<if test="txStartTime != null and txStartTime != ''">
+						    AND convert(od.createdate,date)	>=#{txStartTime}	       
+					    </if>
+					    <if test="txEndTime != null and txEndTime != ''">
+						    AND #{txEndTime} >= convert(od.createdate,date) 	       
+					    </if>
+					    <if test="rebeatStartTime != null and rebeatStartTime != ''">
+						    AND convert(od.createdate,date)	>=#{rebeatStartTime}	       
+					    </if>
+					    <if test="rebeatEndTime != null and rebeatEndTime != ''">
+						    AND #{rebeatEndTime} >= convert(od.finishdate,date) 	       
+					    </if>
+	</select>
+	<!-- 跟据提现id查询当前提现者的企业类型 -->
+	<select id="findCompanyByTxid" parameterType="com.hanson.model.odr.Txjs" resultType="com.hanson.model.Company">
+		SELECT
+			t1.companytype companytype
+		FROM
+			odr_txjs t,
+			u_company t1
+		WHERE
+			t.qyid = t1.id
+		AND t.ID = #{id};
+	</select>
+	
+	<!-- 根据提现ID查询提现订单 -->
+	<select id="findOrdersByTxid" parameterType="com.hanson.model.odr.Txjs" resultType="com.hanson.model.odr.Order">
+		SELECT DISTINCT
+			t.orderid AS orderid
+		FROM
+			fx_frrecord t
+		WHERE
+			t.txid = #{id}
+	</select>
+	
+	<!-- 打款 -->
+	<update id="daKuan" parameterType="com.hanson.model.odr.Txjs">
+		update odr_txjs set finishdate = now(), status = 40 where ID = #{id};
+		update fx_frrecord set fystatus = 40 where txid = #{id};
+		update odr_order set 
+		<if test="companytype == '30'">
+			profetchstatus = 40 
+		</if>
+		<if test="companytype == '20'">
+			procenfetchstatus = 40 
+		</if>
+		<if test="companytype == '10' or companytype == '50'">
+			merchanfetstatus = 40
+		</if>
+		<if test="companytype == '40'">
+			distributfetstatus = 40
+		</if>
+		where orderid in 
+        <foreach collection="orderList" item="item" index="index"
+            open="(" close=")" separator=",">
+            #{item.orderid}
+        </foreach>
+	</update>
+	
+	<!-- 查询条件 -->
+	<sql id="where">	
+		<where>
+			
+			<if test="id != null">
+	    		<![CDATA[ and t.id = #{id} ]]>
+	    	</if>
+	    	
+	    	<if test="qyid != null">
+	    		<![CDATA[ and qyid = #{qyid} ]]>
+	    	</if>
+	    	
+	    	<if test="companyname != null and companyname != '' ">
+	    		<![CDATA[ and t1.companyname like CONCAT('%',#{companyname},'%') ]]>
+	    	</if>
+	    	
+	    	<if test="kdate != null and kdate != ''">
+				  AND t.createdate >= str_to_date('${kdate}','%Y-%m-%d %H:%i:%s')        
+			</if>
+		    <if test="jdate != null and jdate != ''">
+			      AND t.createdate &lt;=DATE_ADD('${jdate}',INTERVAL +1 DAY)      
+		    </if>
+		    
+		    <if test="kdateJs != null and kdateJs != ''">
+				  AND t.finishdate >= str_to_date('${kdateJs}','%Y-%m-%d %H:%i:%s')        
+			</if>
+		    <if test="jdateJs != null and jdateJs != ''">
+			      AND t.finishdate &lt;=DATE_ADD('${jdateJs}',INTERVAL +1 DAY)      
+		    </if>
+	    	
+	    	<if test="status != null and status != ''">
+	    		<![CDATA[ and t.status = #{status} ]]>
+	    	</if>
+	    	
+	    	<if test="checkStatus != null">
+	    		<![CDATA[ and checkStatus = #{checkStatus} ]]>
+	    	</if>
+	    	
+    	</where>
+  	</sql>
+  	
+  	<!-- 排序条件 -->
+  	<sql id="page_sort">
+		<!--排序条件 -->
+		<if test="ORDER_BY_MENU!=null">
+			<choose>
+				<when test="ORDER_BY_DESC!=null">
+		 			<![CDATA[ order by ${ORDER_BY_MENU} ${ORDER_BY_DESC}]]>
+				</when>
+				<otherwise>
+					<![CDATA[ order by ${ORDER_BY_MENU}]]>
+				</otherwise>
+			</choose>
+		</if>
+	</sql>
+	
+	<!-- 分页查询-统计总数 -->
+  	<select id="countTotles" parameterType="java.util.Map" resultType="long">
+	    SELECT
+	    	count(*)
+		FROM
+			odr_txjs t
+		inner join u_company t1 on t.qyid = t1.id and t1.companytype in(20, 10, 40, 30, 50) 
+	    <include refid="where" />
+  	</select>
+  	
+  	<!-- 分页查询 
+  	<select id="search" parameterType="java.util.Map" resultType="java.util.HashMap">
+	    SELECT
+			t.id,
+			t.qyid,
+			t1.companyname AS companyname,
+			t.amount,
+			(
+				SELECT
+					count(DISTINCT t2.orderid)
+				FROM
+					fx_frrecord t2
+				WHERE
+					t2.txid = t.ID
+			) AS ordernumber,
+		  CASE t.status
+			    WHEN 10 THEN '未提现'
+	            WHEN 20 THEN '提现中'
+	            WHEN 40 THEN '成功提现'
+	            ELSE ''
+	      END as status,	
+		  0 as checkStatus,
+		  date_format(t.createdate,'%Y-%m-%d') as createdate,
+		  date_format(t.finishdate,'%Y-%m-%d') as finishdate
+		FROM
+			odr_txjs t
+		inner join u_company t1 on t.qyid = t1.id and t1.companytype in(20, 10, 40, 30, 50) 
+	    <include refid="where" />
+	    <include refid="page_sort" />
+	    
+	    limit #{BEGIN_ROW},#{PAGE_SIZE}
+  	</select>-->
+  	<select id="search" parameterType="java.util.Map" resultType="java.util.HashMap">
+			    	SELECT
+					  tx.ID as id,
+					  tx.qyid as qyid,
+					  fx.txid as txid,
+					  tx.txtype as txtype,
+					  uc.companyname as companyname,
+					  tx.amount as amount,
+					  count(DISTINCT fx.orderid) as orderNumber,
+					  CASE tx.status
+					    WHEN 10 THEN '未提现'
+					          WHEN 20 THEN '提现中'
+					          WHEN 40 THEN '成功提现'
+					          ELSE ''
+					    END as status,
+					  CONVERT(tx.createdate,DATE) as createdate,
+					  CONVERT(tx.finishdate,DATE) as finishdate
+					FROM
+						odr_txjs AS tx
+					LEFT JOIN u_company AS uc ON (uc.id = tx.qyid)
+					LEFT JOIN fx_frrecord AS fx ON (tx.ID = fx.txid)
+					
+					where 1=1 and uc.companytype in (10,50)
+					<if test="id != null">
+	    		<![CDATA[ and tx.id = #{id} ]]>
+	    	</if>
+	    	
+	    	<if test="qyid != null">
+	    		<![CDATA[ and tx.qyid = #{qyid} ]]>
+	    	</if>
+	    	
+	    	<if test="companyname != null and companyname != '' ">
+	    		<![CDATA[ and uc.companyname like CONCAT('%',#{companyname},'%') ]]>
+	    	</if>
+	    	
+	    	<if test="kdate != null and kdate != ''">
+				  AND tx.createdate >= str_to_date('${kdate}','%Y-%m-%d %H:%i:%s')        
+			</if>
+		    <if test="jdate != null and jdate != ''">
+			      AND tx.createdate &lt;=DATE_ADD('${jdate}',INTERVAL +1 DAY)      
+		    </if>
+		    
+		    <if test="kdateJs != null and kdateJs != ''">
+				  AND tx.finishdate >= str_to_date('${kdateJs}','%Y-%m-%d %H:%i:%s')        
+			</if>
+		    <if test="jdateJs != null and jdateJs != ''">
+			      AND tx.finishdate &lt;=DATE_ADD('${jdateJs}',INTERVAL +1 DAY)      
+		    </if>
+	    	
+	    	<if test="status != null and status != ''">
+	    		<![CDATA[ and tx.status = #{status} ]]>
+	    	</if>
+	    	GROUP BY tx.id
+	    	<include refid="page_sort" />
+			limit #{BEGIN_ROW},#{PAGE_SIZE}
+			
+	</select>
+  	<!-- 提现导出Excel(废弃) -->
+  	<select id="getTxjsExcel" parameterType="com.hanson.model.odr.Txjs" resultMap="txjsResultMap">
+	    SELECT
+			t.id,
+			t.qyid,
+			t1.companyname AS companyname,
+			t.amount,
+			(
+				SELECT
+					count(DISTINCT t2.orderid)
+				FROM
+					fx_frrecord t2
+				WHERE
+					t2.txid = t.ID
+			) AS ordernumber,
+		  t.status,
+		  0 as checkStatus,
+		  date_format(t.createdate,'%Y-%m-%d') as createdate,
+		  date_format(t.finishdate,'%Y-%m-%d') as finishdate
+		FROM
+			odr_txjs t
+		inner join u_company t1 on t.qyid = t1.id and t1.companytype in(40, 30, 50) 
+	    <include refid="where" />
+	    order by t.id desc
+  	</select>
+  	
+  	<!-- 提现导出Excel -->
+  	<select id="getTxjsExcelNew" parameterType="com.hanson.model.odr.Txjs" resultType="map">
+	    select 
+	    	DATE_FORMAT(t.createdate, '%Y-%m-%d') as createdate,
+			t.ID, 
+			FORMAT(t.amount, 2) as amount,
+			t.`status`,
+			t.qyid,
+			t2.companyname,
+			t2.companytype,
+			(select count(distinct ff.orderid) from fx_frrecord ff where ff.txid = t.ID ) as ordernum,
+			t3.cuname,
+			t1.orderid,
+			FORMAT(t3.totalprice/100, 2) as totalprice,
+			FORMAT(t3.productotallprice/100, 2) as productotallprice,
+			FORMAT((t3.totalprice-t3.productotallprice)/100, 2) as postPrice,
+			FORMAT(t3.produceprice/100, 2) as produceprice,
+			'返佣结算' as jsfs,
+			FORMAT(t1.fyamount, 2) as jsAmount,
+			DATE_FORMAT(t3.createdate, '%Y-%m-%d') as ordercreatedate
+			
+		from odr_txjs t
+		inner join (select ff.txid, ff.orderid, sum(ff.fyamount) as fyamount from fx_frrecord ff GROUP BY ff.txid, ff.orderid) t1 on t.ID = t1.txid
+		left join u_company t2 on t.qyid = t2.id
+		left join odr_order t3 on t1.orderid = t3.orderid
+		
+		<where>
+			
+			<if test="id != null">
+	    		<![CDATA[ and t.id = #{id} ]]>
+	    	</if>
+	    	
+	    	<if test="qyid != null">
+	    		<![CDATA[ and t.qyid = #{qyid} ]]>
+	    	</if>
+	    	
+	    	<if test="companyname != null and companyname != '' ">
+	    		<![CDATA[ and companyname like CONCAT('%',#{companyname},'%') ]]>
+	    	</if>
+	    	
+	    	<if test="kdate != null and kdate != ''">
+				  AND t.createdate >= str_to_date('${kdate}','%Y-%m-%d %H:%i:%s')        
+			</if>
+		    <if test="jdate != null and jdate != ''">
+			      AND t.createdate &lt;=DATE_ADD('${jdate}',INTERVAL +1 DAY)      
+		    </if>
+		    
+		    <if test="kdateJs != null and kdateJs != ''">
+				  AND t.finishdate >= str_to_date('${kdateJs}','%Y-%m-%d %H:%i:%s')        
+			</if>
+		    <if test="jdateJs != null and jdateJs != ''">
+			      AND t.finishdate &lt;=DATE_ADD('${jdateJs}',INTERVAL +1 DAY)      
+		    </if>
+	    	
+	    	<if test="status != null and status != ''">
+	    		<![CDATA[ and t.status = #{status} ]]>
+	    	</if>
+	    	
+	    	<if test="checkStatus != null">
+	    		<![CDATA[ and checkStatus = #{checkStatus} ]]>
+	    	</if>
+	    	
+    	</where>
+		
+		order by t.createdate DESC
+
+	    
+  	</select>
+  	
+  	<select id="countOrderTotles" parameterType="java.util.Map" resultType="long">
+  		SELECT
+			count(*)
+		FROM
+			odr_order t2,
+			(
+				SELECT
+					t1.orderid,
+					sum(t1.fyamount) AS fyamount
+				FROM
+					odr_txjs t,
+					fx_frrecord t1
+				WHERE
+					t.id = t1.txid
+				AND t.ID = #{id}
+				GROUP BY
+					t1.orderid
+			) t3, odr_ordership t4 
+		WHERE
+			t2.orderid = t3.orderid and t2.shipid = t4.id
+			<if test="orderid != null">
+				and t2.orderid = #{orderid}
+			</if>
+  	</select>
+  	
+  	<select id="searchOrder" parameterType="java.util.Map" resultType="java.util.HashMap">
+  		SELECT
+			t2.ID,
+			t2.cuid,
+			if(t2.qyid is null or t2.qyid = 0, if(t2.prometerid is null or t2.prometerid = 0, if(t2.merchantid is null or t2.merchantid = 0, if(t2.distributorid is null or t2.distributorid =0, 0, t2.distributorid), t2.merchantid), t2.prometerid), t2.qyid) as qyid,
+			t2.orderid,
+			t2.cuname,
+			t2.totalprice/100 as totalprice,
+			t2.productotallprice/100 as productotallprice,
+			(t2.totalprice-t2.productotallprice)/100 as youfeijine,
+			CASE t2.orderstatus
+			    WHEN 0 THEN '未生产'
+	            WHEN 20 THEN '未生产'
+	            WHEN 25 THEN '生产完毕'
+	            WHEN 30 THEN '已发货'
+	            WHEN 110 THEN '已关闭'
+	            WHEN 200 THEN '无效订单'
+	            ELSE ''
+	         END as orderstatus,
+	         
+	         CASE t2.merchanfetstatus
+	            WHEN 0  THEN '未提现'
+	            WHEN 10 THEN '未提现 '
+	            WHEN 20 THEN '提现中'
+	            WHEN 40 THEN '成功提现'
+	            ELSE ''
+	         END as merchanfetstatus,
+	        
+	        date_format(t2.createdate,'%Y-%m-%d') as createdate,
+			
+			CASE t2.paytype
+	            WHEN 0 THEN '支付宝 '
+	            WHEN 1 THEN '微支付'
+	            ELSE ''
+	         END as paytype,
+	         t3.fyamount,
+	       CASE t2.expresstype
+	            WHEN 1 THEN '快递配送 '
+	            WHEN 2 THEN '上门自取'
+	            ELSE ''
+	         END as expresstype, 
+	         
+	       t4.expressno,
+	       t4.ExpressCompanyName
+		FROM
+			odr_order t2,
+			(
+				SELECT
+					t1.orderid,
+					sum(t1.fyamount) AS fyamount
+				FROM
+					odr_txjs t,
+					fx_frrecord t1
+				WHERE
+					t.id = t1.txid
+				AND t.ID = #{id}
+				GROUP BY
+					t1.orderid
+			) t3, odr_ordership t4 
+		WHERE
+			t2.orderid = t3.orderid and t2.shipid = t4.id
+			<if test="orderid != null">
+				and t2.orderid = #{orderid}
+			</if>
+	    <include refid="page_sort" />
+	    limit #{BEGIN_ROW},#{PAGE_SIZE}
+  	</select>
+	
+</mapper>

@@ -1,0 +1,53 @@
+#linux
+netApi.downloadImg.qrcodepath=/webapps/ROOT/
+netApi.downloadImg.imgurl=/webapps/ROOT/
+netApi.downloadImg.excel=/mnt/ 
+netApi.downloadImg.useruploadfile=images/
+netApi.shipped.weixin = http://hmwc.hymn.net.cn/wxapi/test/deliverGoods
+
+#test
+#netApi.shipped.weixin = http://hmwc-test.homy.cc/wxapi/test/deliverGoods
+
+
+#local
+#netApi.downloadImg.qrcodepath=\\webapps\\ROOT\\
+#netApi.downloadImg.excel=E\:\\
+#netApi.downloadImg.imgurl=\\webapps\\ROOT\\
+#netApi.downloadImg.useruploadfile=images\\
+#netApi.shipped.weixin = http://hmwc-test.homy.cc/wxapi/test/deliverGoods
+
+#phone-sms
+phone.sms.url = http://gw.api.taobao.com/router/rest
+#phone.sms.url = https://eco.taobao.com/router/rest
+phone.sms.appkey = 8H1rFxe6lPhgFb1Q
+phone.sms.secret = gNqJFo7rAIGsQldUXOICjPlY5VEi94
+
+
+#kaifa
+#manage.image.save.dir=D\:/apache-tomcat-7.0.61-windows-x64/apache-tomcat-7.0.61/webapps/ROOT/manageImages
+#manage.image.view.dir=http\://127.0.0.1\:8080/
+
+#product upload img url
+#manage.image.save.dir=/mnt/tomcat7_manage/webapps/ROOT/manageImages
+#manage.image.view.dir = http://duo2.homy.cc/
+#/mnt/tomcat7_manage/webapps/ROOT/manageImages
+#yuepaiimage url /mnt/hmw/tomcat7-manage/webapps/ROOT/
+#yuyue.image.save.dir=/mnt/tomcat7_manage/webapps/ROOT/ypimages
+#yuyue.image.view.dir = http\://127.0.0.1\:8080/
+
+#product upload img url
+#manage.image.save.dir=/mnt/hmw/tomcat7-manage/webapps/ROOT/manageImages
+#manage.image.view.dir = http://d-manage.homy.cc/
+
+#yuepaiimage url /mnt/hmw/tomcat7-manage/webapps/ROOT/
+#yuyue.image.save.dir=/mnt/hmw/tomcat7-manage/webapps/ROOT/ypimages
+#yuyue.image.view.dir = http://d-manage.homy.cc/
+
+manage.image.save.dir=/mnt/demo_manage/webapps/ROOT/manageImages
+manage.image.view.dir = http\://hmzf-img.homy.cc/images/
+#/mnt/demo_manage/webapps/ROOT/images/ypimages
+yuyue.image.save.dir=/mnt/demo_manage/webapps/ROOT/ypimages
+yuyue.image.view.dir = http\://hmzf-img.homy.cc/images/
+
+store.activity.save.dir=/mnt/demo_manage/webapps/ROOT/manageImages/msgInform
+store.activity.view.dir=http\://hmzf-img.homy.cc/images/

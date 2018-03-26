@@ -1,0 +1,499 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hanson.mapper.UcompanyMapper">
+	<sql id="where">	
+		<where>
+			<if test="id != null">
+	    		<![CDATA[ and ucompany.id = #{id} ]]>
+	    	</if>
+	    	<if test="province != null">
+	    		<![CDATA[ and province = #{province} ]]>
+	    	</if>
+	    	<if test="city != null">
+	    		<![CDATA[ and city = #{city} ]]>
+	    	</if>
+	    	<if test="area != null">
+	    		<![CDATA[ and area = #{area} ]]>
+	    	</if>
+	    	<if test="address != null">
+	    		<![CDATA[ and address like CONCAT('%',#{address},'%') ]]>
+	    	</if>
+	    	<if test="email != null">
+	    		<![CDATA[ and email like CONCAT('%',#{email},'%') ]]>
+	    	</if>
+	    	<if test="mobile != null">
+	    		<![CDATA[ and mobile like CONCAT('%',#{mobile},'%') ]]>
+	    	</if>
+	    	<if test="phone != null">
+	    		<![CDATA[ and phone like CONCAT('%',#{phone},'%') ]]>
+	    	</if>
+			<if test="code != null">
+	    		<![CDATA[ and code like CONCAT('%',#{code},'%') ]]>
+	    	</if>
+	    	<if test="companyname != null">
+	    		<![CDATA[ and companyname like CONCAT('%',#{companyname},'%') ]]>
+	    	</if>
+	    	<if test="companytype != null">
+	    		<![CDATA[ and companytype = #{companytype} ]]>
+	    	</if>
+	    	<if test="WdatePickerStart != null">
+	    		<![CDATA[ and createtime >= #{WdatePickerStart} ]]>
+	    	</if>
+	    	<if test="WdatePickerEnd != null">
+	    		<![CDATA[ and createtime <= #{WdatePickerEnd} ]]>
+	    	</if>
+	    	<if test="storepath!=null">
+	    	<![CDATA[ and storepath = #{storepath} ]]>
+	    	</if>
+	    
+    	</where>
+  	</sql>
+  	
+  	<sql id="page_sort">
+		<!--排序条件 -->
+		<if test="ORDER_BY_MENU!=null">
+			<choose>
+				<when test="ORDER_BY_DESC!=null">
+		 			<![CDATA[ order by ${ORDER_BY_MENU} ${ORDER_BY_DESC}]]>
+				</when>
+				<otherwise>
+					<![CDATA[ order by ${ORDER_BY_MENU}]]>
+				</otherwise>
+			</choose>
+		</if>
+	</sql>
+
+	<!-- 分页查询-根据企业名称模糊查询 -->
+  	<select id="findListLikeName" parameterType="java.lang.String" resultType="com.hanson.model.Company">
+  		<![CDATA[ select * from  u_company where companyname like CONCAT('%',#{0},'%') limit 0, 10 ]]>
+	     
+  	</select>
+
+	<!-- 分页查询-根据上級編碼查詢企業 -->
+  	<select id="findListByPid" parameterType="java.lang.Long" resultType="com.hanson.model.Company">
+	     select * from  u_company where companytype = 30 and prometerid = #{0}
+  	</select>
+
+	<select id="findUniqueById" resultType="com.hanson.model.Company" parameterType="java.lang.Long">
+		 select * from  u_company where id = #{0}
+	</select>
+
+	<!-- 分页查询-数据查询 -->
+  	<select id="search" parameterType="java.util.Map" resultType="java.util.HashMap">
+	    select ucompany.*, sysp.provincename, sysc.cityname, sysd.districtname
+	    from u_company as ucompany
+	    
+	    left join sys_province as sysp on sysp.id = ucompany.province
+	    left join sys_city as sysc on sysc.id = ucompany.city
+	    left join sys_district as sysd on sysd.id = ucompany.area
+	    <include refid="where" />
+	    <include refid="page_sort" />
+	    limit #{BEGIN_ROW},#{PAGE_SIZE}
+  	</select>
+  	
+  	<!-- 分页查询-统计总数 -->
+  	<select id="countTotles" parameterType="java.util.Map" resultType="long">
+	    select count(*) from u_company as ucompany
+	    <include refid="where" />
+	    <include refid="page_sort" />
+  	</select>
+  	
+  	<!-- 插入-对象 -->
+  	<insert id="insert" parameterType="com.hanson.model.Company" useGeneratedKeys="true" keyProperty="id">
+            INSERT INTO u_company  
+            <trim prefix="(" suffix=")" suffixOverrides=",">  
+                <if test="companyname != null">  
+                    `companyname`,  
+                </if>  
+                <if test="code != null ">  
+                    `code`,  
+                </if>  
+                <if test="address != null and address != ''">  
+                    `address`,  
+                </if>  
+                <if test="email != null and email != ''">  
+                    `email`,  
+                </if>  
+                <if test="website != null and website != ''">  
+                    `website`,  
+                </if>  
+                <if test="mobile != null and mobile != ''">  
+                    `mobile`,  
+                </if>  
+                <if test="phone != null and phone != ''">  
+                    `phone`,  
+                </if>  
+                <if test="introduce != null and introduce != ''">  
+                    `introduce`,  
+                </if>  
+                <if test="sdesc != null and sdesc != ''">  
+                    `sdesc`,  
+                </if>  
+                <if test="logo != null and logo != ''">  
+                    `logo`,  
+                </if>  
+                <if test="createtime != null and createtime != ''">  
+                    `createtime`,  
+                </if>   
+                <if test="province != null and province != ''">  
+                    `province`,  
+                </if>
+                <if test="city != null and city != ''">  
+                    `city`,  
+                </if>
+                <if test="area != null and area != ''">  
+                    `area`,  
+                </if>
+                <if test="companytype != null and companytype != ''">  
+                    `companytype`,  
+                </if>
+                <if test="tuiguangurl != null and tuiguangurl != ''">  
+                    `tuiguangurl`,  
+                </if>
+                <if test="msgtype != null and msgtype != ''">  
+                    `msgtype`,  
+                </if>
+                <if test="companyimg != null and companyimg != ''">  
+                    `companyimg`,  
+                </if>
+                <if test="photorate != null and photorate != ''">  
+                    `photorate`,  
+                </if>
+                <if test="merchantid != null and merchantid != ''">  
+                    `merchantid`,  
+                </if>
+                <if test="prometerid != null and prometerid != ''">  
+                    `prometerid`,  
+                </if>
+                <if test="distributid != null and distributid != ''">  
+                    `distributid`,  
+                </if>
+                <if test="companyfrom != null ">  
+                    `companyfrom`,  
+                </if>
+                <if test="storepath !=null ">
+                   `storepath`,
+                </if>
+                <if test=" latitude !=null ">
+                  latitude,
+                </if>
+                <if test="longitude !=null ">
+                 longitude,
+                </if>
+            </trim>  
+            <trim prefix="values (" suffix=")" suffixOverrides=",">  
+            	<if test="companyname != null "> 
+            		#{companyname,jdbcType=VARCHAR},  
+                </if>  
+                <if test="code != null ">  
+                    #{code,jdbcType=VARCHAR},  
+                </if>  
+                <if test="address != null and address != ''">  
+                    #{address,jdbcType=VARCHAR}, 
+                </if>  
+                <if test="email != null and email != ''">  
+                    #{email,jdbcType=VARCHAR}, 
+                </if>  
+                <if test="website != null and website != ''">  
+                     #{website,jdbcType=VARCHAR}, 
+                </if>  
+                <if test="mobile != null and mobile != ''">  
+                     #{mobile,jdbcType=VARCHAR}, 
+                </if>  
+                <if test="phone != null and phone != ''">  
+                     #{phone,jdbcType=VARCHAR},  
+                </if>  
+                <if test="introduce != null and introduce != ''">  
+                    #{introduce,jdbcType=VARCHAR}, 
+                </if>  
+                <if test="sdesc != null and sdesc != ''">  
+                    #{sdesc,jdbcType=VARCHAR}, 
+                </if>  
+                <if test="logo != null and logo != ''">  
+                     #{logo,jdbcType=VARCHAR}, 
+                </if>  
+                <if test="createtime != null and createtime != ''">  
+                     #{createtime,jdbcType=TIMESTAMP}, 
+                </if>
+                <if test="province != null and province != ''">  
+                    #{province,jdbcType=VARCHAR},  
+                </if>
+                <if test="city != null and city != ''">  
+                    #{city,jdbcType=VARCHAR},  
+                </if>
+                <if test="area != null and area != ''">  
+                     #{area,jdbcType=VARCHAR},   
+                </if>
+                <if test="companytype != null and companytype != ''">  
+                    #{companytype,jdbcType=VARCHAR}, 
+                </if>
+                <if test="tuiguangurl != null and tuiguangurl != ''">  
+                    #{tuiguangurl,jdbcType=VARCHAR}, 
+                </if>
+                <if test="msgtype != null and msgtype != ''">  
+                     #{msgtype,jdbcType=INTEGER},  
+                </if>
+                <if test="companyimg != null and companyimg != ''">  
+                    #{companyimg,jdbcType=VARCHAR}, 
+                </if>
+                <if test="photorate != null and photorate != ''">  
+                    #{photorate,jdbcType=DOUBLE}/100, 
+                </if>
+                <if test="merchantid != null and merchantid !=''">  
+                    #{merchantid,jdbcType=INTEGER}, 
+                </if>
+                <if test="prometerid != null and prometerid !=''">  
+                    #{prometerid,jdbcType=INTEGER}, 
+                </if>
+                <if test="distributid != null and distributid !=''">  
+                    #{distributid,jdbcType=INTEGER}, 
+                </if>
+                <if test="companyfrom != null">  
+                    #{companyfrom,jdbcType=INTEGER}, 
+                </if>
+                <if test="storepath!=null ">
+                   #{storepath,jdbcType=VARCHAR},
+                </if>
+                <if test="latitude != null">
+                 #{latitude,jdbcType=VARCHAR},
+                </if>
+                <if test="longitude!=null">
+                  #{longitude,jdbcType=VARCHAR},
+                </if>
+            </trim>
+    </insert>
+	
+	<update id="createprometerurl" parameterType="com.hanson.model.Company">
+	  UPDATE u_company  set tuiguangurl=#{tuiguangurl} where id=#{id}
+	</update>
+	<update id="updatememberrate" parameterType="com.hanson.model.Company">
+	  UPDATE u_company set memberenable=#{memberenable}   WHERE id=#{id}
+	</update>
+	<update id="updateHeadStore" parameterType="com.hanson.model.Company">
+	  UPDATE u_company set headoffice=#{headoffice}   WHERE id=#{id}
+	</update> 
+	<update id="updateOne" parameterType="com.hanson.model.Company">
+		 UPDATE u_company
+		 <trim prefix="set" suffixOverrides=",">
+		 	<if test="companyname != null"> 
+            		companyname = #{companyname},  
+                </if>  
+                <if test="code != null">  
+                   code= #{code},  
+                </if>  
+                <if test="license != null">  
+                   license = #{license},
+                </if>  
+                <if test="licenseimg != null">  
+                    licenseimg = #{licenseimg},
+                </if>  
+                <if test="address != null">  
+                    address = #{address}, 
+                </if>  
+                <if test="email != null">  
+                    email = #{email}, 
+                </if>  
+                <if test="website != null">  
+                    website = #{website}, 
+                </if>  
+                <if test="mobile != null">  
+                     mobile = #{mobile}, 
+                </if>  
+                <if test="phone != null">  
+                     phone = #{phone},  
+                </if>  
+                <if test="introduce != null">  
+                    introduce = #{introduce}, 
+                </if>  
+                <if test="sdesc != null">  
+                    sdesc = #{sdesc}, 
+                </if>  
+                <if test="logo != null">  
+                    logo = #{logo}, 
+                </if> 
+                <if test="province != null">  
+                    province = #{province},  
+                </if>
+                <if test="city != null">  
+                    city = #{city},  
+                </if>
+                <if test="area != null">  
+                    area = #{area},   
+                </if>
+                <if test="companytype != null">  
+                    companytype = #{companytype}, 
+                </if>
+                <if test="prometerid != null">  
+                    prometerid = #{prometerid}, 
+                </if>
+                <if test="merchantid != null">  
+                    merchantid = #{merchantid}, 
+                </if>
+                <if test="distributid != null">  
+                    distributid = #{distributid}, 
+                </if>
+                <if test="tuiguangurl != null">  
+                    tuiguangurl = #{tuiguangurl}, 
+                </if>
+                <if test="msgtype != null">  
+                    msgtype = #{msgtype},  
+                </if>
+                <if test="photorate != null">
+                	photorate = #{photorate}/100, 
+                </if>
+                <if test="photoframerate != null">
+                	photoframerate = #{photoframerate}/100, 
+                </if>
+                <if test="photoalbumrate != null">
+                	photoalbumrate = #{photoalbumrate}/100, 
+                </if>
+                <if test="outphotorate!=null ">
+                   outphotorate=#{outphotorate}/100,
+                </if>
+                <if test="memberrate!=null">
+                  memberrate=#{memberrate}/100,
+                </if>
+                <if test="photoenable != null">
+                	photoenable = #{photoenable}, 
+                </if>
+                <if test="photoframeenable != null">
+                	photoframeenable = #{photoframeenable}, 
+                </if>
+                <if test="photoalbumenable != null">
+                	photoalbumenable = #{photoalbumenable}, 
+                </if>
+                <if test="outphotoenable!=null">
+                  outphotoenable=#{outphotoenable},
+                </if>
+                <if test="memberenable!=null">
+                  memberenable=#{memberenable},
+                </if>
+                <if test="storepath!=null">
+                  storepath=#{storepath},
+                </if>
+                <if test="latitude!=null">
+                  latitude=#{latitude},
+                </if>
+                <if test="longitude!=null">
+                  longitude=#{longitude},
+                </if>
+                <if test="headoffice!=null and headoffice!=0">
+                  headoffice=#{headoffice},
+                </if>
+		 </trim>
+		 WHERE id=#{id}
+	</update>
+	<update id="updateMainStore" parameterType="com.hanson.model.Company">
+	  update u_company set headoffice=#{headoffice} where id=#{id}
+	</update>
+	<update id="clearParentid" parameterType="java.lang.Long">
+		  UPDATE u_company set prometerid = 0, merchantid = 0, prometerid = 0  where id = #{id}
+	</update>
+	<update id="setstoreauthority" parameterType="com.hanson.model.Company" >
+	     update u_company
+	     <trim prefix="set" suffixOverrides=",">
+	           <if test="photoenable != null">
+                	photoenable = #{photoenable}, 
+                </if>
+                <if test="photoframeenable != null">
+                	photoframeenable = #{photoframeenable}, 
+                </if>
+                <if test="photoframeenable == null">
+                	photoframeenable = 0, 
+                </if>
+                <if test="photoalbumenable != null">
+                	photoalbumenable = #{photoalbumenable}, 
+                </if>
+                <if test="photoalbumenable == null">
+                	photoalbumenable = 0, 
+                </if>
+                <if test="outphotoenable!=null">
+                  outphotoenable=#{outphotoenable},
+                </if>
+                <if test="outphotoenable==null">
+                  outphotoenable=0,
+                </if>
+                <if test="memberenable!=null">
+                  memberenable=#{memberenable},
+                </if>
+                <if test="memberenable == null">
+                  memberenable=0,
+                </if>
+                <if test="photorate!=null">
+                  photorate=#{photorate}/100,
+                </if>
+                <if test="photoframerate!=null">
+                  photoframerate=#{photoframerate}/100,
+                </if>
+                <if test="photoalbumrate!=null">
+                  photoalbumrate=#{photoalbumrate}/100,
+                </if>
+                <if test="outphotorate!=null">
+                  outphotorate=#{outphotorate}/100,
+                </if>
+                <if test="headoffice!=null and headoffice!=0">
+                  headoffice=#{headoffice},
+                </if>
+	     </trim>
+	      WHERE id=#{id}
+	</update>
+	<!-- 查询经销商所属上级 -->
+	<select id="findDistributParent" resultType="com.hanson.model.Company" parameterType="Long">
+		select * from u_company t where t.id = #{id}
+	</select>
+	
+	<!-- 查询区域制作中心和门店所属上级 -->
+	<select id="findMerchantParent" resultType="com.hanson.model.Company" parameterType="Long">
+		select * from u_company t where t.id = #{id}
+		union
+		select * from u_company t where t.companytype=40
+	</select>
+	<delete id="deleteCompany" parameterType="Long">
+	  delete from u_company where id=#{id}
+	</delete>
+	<!-- 查询推广中心所属上级 -->
+	<select id="findPrometerParent" resultType="com.hanson.model.Company" parameterType="Long">
+		select * from u_company t where t.id = #{id}
+		union
+		select * from u_company t where t.companytype in (10,50)
+	</select>
+	<select id="findPrometerCenter" resultType="com.hanson.model.Company" parameterType="Long">
+	    select * from u_company t where t.id = #{id}
+		union
+		select * from u_company t where t.companytype in (20)
+	</select>
+	<!-- 查询推广员所属上级 -->
+	<select id="findMemberParent" resultType="com.hanson.model.Company">
+		select * from u_company t where t.distributid != 0 and t.merchantid != 0 and t.prometerid = 0 and t.companytype = 20
+	</select>
+	<select id="getprometerCenter" parameterType="com.hanson.model.Company" resultType="com.hanson.model.Company">
+	 select * from u_company where companytype=20 and distributid=${distributid}
+	</select>
+	<select id="getStoreParent" parameterType="com.hanson.model.Company" resultType="com.hanson.model.Company">
+	   select * from u_company where companytype=50 and distributid=${distributid}
+	</select>
+	<select id="getdistributParent" parameterType="com.hanson.model.Company" resultType="com.hanson.model.Company">
+	   select * from u_company where companytype= 10 and distributid =#{distributid}
+	</select>
+	<select id="findHymnCenters" parameterType="com.hanson.model.Company" resultType="com.hanson.model.Company">
+		select * from u_company t where t.isassign = 1 and t.companytype in (10, 50)
+	</select>
+	
+	<!-- 查询生产中心或者商户(仅供给改部分商户初始化相框数据使用) -->
+	<select id="searchMerchant" resultType="com.hanson.model.Company">
+		select * from u_company t where t.companytype in (10,50) and t.id != 103;
+	</select>
+	<select id="FindCompanybyCode" parameterType="java.lang.String" resultType="com.hanson.model.Company">
+	   select * from u_company where code=#{code}
+	</select>
+	<select id="findheadStore" parameterType="java.lang.String"  resultType="com.hanson.model.Company" >
+	     select * from u_company  
+	     <where> 
+          <if test = " companyname!=null and companyname!='' ">
+            AND companyname like '${companyname}%'
+         </if>
+         </where>
+	   
+	</select>
+	
+</mapper>

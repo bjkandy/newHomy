@@ -1,0 +1,36 @@
+<link rel="stylesheet" type="text/css" href="css/table.css"/>
+<link rel="stylesheet" href="css/common.css" />
+<!--快速查询-->
+<!--<div class="quick_search">
+	<span>项目名:<input type="text"/></span>
+	<span>创建日期:<input type="text"/>~<input type="text"/></span>
+</div>-->
+<!--对表单进行操作-->
+<div class="from_handle">
+	<a href="#" style="display: none;"><b></b></a>
+	<a href="#"><b></b>不可预约</a>
+	<a href="#"><b></b>可预约</a>
+	<a href="#" style="display: none;"><b></b>查询</a>
+	<a href="#" style="display: none;"><b></b>重置</a>
+</div>
+<!--表单-->
+<table id="cs_table" class="datatable"></table>
+<script src="js/table.js" type="text/javascript" charset="utf-8"></script>
+<script>
+	var data = [];
+    for(var i=0;i<20;i++){
+        data[i] = {bianhao:i+1,id:i+1,time:"2017-4-17",qyid:"可预约"};
+    }
+    var cs = new table({
+        "tableId":"cs_table",    //必须
+        "headers":["","编号","时间","预约状态"],   //必须
+        "data":data,        //必须
+        "displayNum": 6,    //必须   默认 10
+        "groupDataNum":9  //可选    默认 10
+	});	
+	//点击表格添加active
+	$('#cs_table').on("click","td",function(){
+		console.log(this);
+		$(this).parent().addClass("active").siblings().removeClass("active");
+	})
+</script>

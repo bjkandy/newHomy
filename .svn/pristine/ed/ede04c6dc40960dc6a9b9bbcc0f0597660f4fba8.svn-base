@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>订单详情</title>
+		<link rel="stylesheet" href="../../../hanson/css/base.css" />
+		<style type="text/css">
+			body{font-family: "微软雅黑";color: #333333;background-color: #FFFFFF;padding: 10px;}
+			*{box-sizing: border-box;}
+			.returnBtn{position: absolute;top: 0px;right: 20px;outline: none;border: none;background-color: #108EE9;color: #FFFFFF;
+			border-radius: 5px;padding: 0px 10px;height: 30px;line-height: 30px;}
+			.orderDeail{background-color: #FBFBFB;padding: 20px;}
+			.orderDeail table{width: 100%;}
+			.orderDeail table td{height: 30px;line-height: 30px;}
+			.divCom{background-color: #FBFBFB;margin: 20px 0;border: 1px solid #EBEBEB;border-radius: 5px;}
+			.divCom table{width: 100%;padding: 0px 20px 10px 20px;}
+			.divCom table td{height: 30px;line-height: 30px;text-align: center;}
+			.divCom table td span{color: red;}
+			.divCom h4{padding:0px 20px;height: 50px;line-height: 50px;background-color: #F3F3F3;font-size: 18px;}
+		</style>
+	</head>
+	<body>
+		<div style="position: relative;"><h3 style="margin: 20px;">订单详情</h3><button class="returnBtn">返回</button></div>
+		<div class="orderDeail">
+			<table border="0">
+				<tbody>
+					<tr><td>订单编号：</td><td>1111111</td><td>订单状态：</td><td>已关闭</td></tr>
+					<tr><td>联系人：</td><td>钱有</td><td>性别：</td><td>男</td><td>联系电话：</td><td>13394455481</td></tr>
+					<tr><td>订单金额：</td><td>¥50,000.00</td><td>支付方式：</td><td>微信支付</td></tr>
+					<tr><td>下单时间：</td><td>2017/07/24 12:28:25</td><td>支付时间：</td><td>2017/07/24 12:30:00</td></tr>
+				</tbody>
+			</table>
+		</div>
+		<div class="divCom">
+			<h4>相关商户</h4>
+			<table border="0">
+				<tr><td>预约时间：</td><td>2017/07/24 12:30</td></tr>
+				<tr><td>服务商家：</td><td>深圳汇美相馆八卦岭店</td><td>推广商家：</td><td>邹勇</td></tr>
+				<tr><td>摄影师：</td><td>张卫华</td></tr>
+			</table>
+		</div>
+		<div class="divCom">
+			<h4>服务详情</h4>
+			 <table border="0">
+			 	<thead>
+			 		<tr>
+			 			<th>商品图</th>
+			 			<th>商品</th>
+			 			<th>商品价格（元）</th>
+			 			<th>商品数量</th>
+			 			<th>优惠（元）</th>
+			 			<th>小计（元）</th>
+			 		</tr>
+			 	</thead>
+			 	<tbody>
+			 		<tr>
+			 			<td><img src="../../../hanson/img/back.png" width="100"/></td>
+			 			<td>完美证件照</td>
+			 			<td><span>￥500.00</span></td>
+			 			<td>X1</td>
+			 			<td><span>￥0.00</span></td>
+			 			<td><span>￥500.00</span></td>
+			 		</tr>
+			 		<tr>
+			 			<td><img src="../../../hanson/img/back.png" width="100"/></td>
+			 			<td>完美证件照</td>
+			 			<td><span>￥500.00</span></td>
+			 			<td>X1</td>
+			 			<td><span>￥0.00</span></td>
+			 			<td><span>￥500.00</span></td>
+			 		</tr>
+			 		<tr>
+			 			<td><img src="../../../hanson/img/back.png" width="100"/></td>
+			 			<td>完美证件照</td>
+			 			<td><span>￥500.00</span></td>
+			 			<td>X1</td>
+			 			<td><span>￥0.00</span></td>
+			 			<td><span>￥500.00</span></td>
+			 		</tr>
+			 	</tbody>
+			 	<tfoot><td colspan="6" style="text-align: right;">服务详情返回订单共1件商品，总计：<span>￥1770.00</span></td></tfoot>
+			 </table>
+		</div>
+	</body>
+</html>

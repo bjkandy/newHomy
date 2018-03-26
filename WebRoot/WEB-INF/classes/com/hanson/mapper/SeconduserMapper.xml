@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hanson.mapper.SeconduserMapper">
+	<!-- 查询条件 -->
+	<sql id="where">	
+		<where>
+			<if test="nickname != null">
+	    		<![CDATA[ and nickname like CONCAT('%',#{nickname},'%') ]]>
+	    	</if>
+    	</where>
+  	</sql>
+  	
+  	<!-- 排序条件 -->
+  	<sql id="page_sort">
+		<!--排序条件 -->
+		<if test="ORDER_BY_MENU!=null">
+			<choose>
+				<when test="ORDER_BY_DESC!=null">
+		 			<![CDATA[ order by ${ORDER_BY_MENU} ${ORDER_BY_DESC}]]>
+				</when>
+				<otherwise>
+					<![CDATA[ order by ${ORDER_BY_MENU}]]>
+				</otherwise>
+			</choose>
+		</if>
+	</sql>
+  	
+  	<!-- 分页查询-统计总数 -->
+  	<select id="countTotles" parameterType="java.util.Map" resultType="long">
+	    select count(*) from u_seconduser
+	    <include refid="where" />
+	    <include refid="page_sort" />
+  	</select>
+  	
+  	<!-- 分页查询 -->
+  	<select id="search" parameterType="java.util.Map" resultType="java.util.HashMap">
+	    select * from u_seconduser
+	    <include refid="where" />
+	    <include refid="page_sort" />
+	    limit #{BEGIN_ROW},#{PAGE_SIZE}
+  	</select>
+  	
+  	
+	<!-- 会员管理查询 -->
+	<select id="findUserList" parameterType="com.hanson.model.Seconduser" resultType="com.hanson.model.Seconduser">
+		 select id, nickname, sex, mobile, email 
+		 from  u_seconduser 
+		 <where>
+		  1=1
+		  <if test="nickname != null and nickname != ''">
+			AND nickname like CONCAT('%','${nickname}','%')  
+		  </if>
+		 </where>
+		 limit 0, 10
+		 
+	</select>
+	
+	<select id="getUniqueBy" resultType="com.hanson.model.Seconduser" parameterType="java.lang.String">
+		 select * from  u_seconduser where openid = #{0}
+	</select>
+	
+	<select id="findFansadd" resultType="java.lang.Integer" parameterType="java.util.Map">
+		 <![CDATA[ select count(*) from  u_seconduser   ]]> 
+		 	<where>
+			<if test="WdatePickerStart != null and WdatePickerStart != ''">
+			  	<![CDATA[ AND createtime >= #{WdatePickerStart}  ]]>      
+		    </if>
+		    <if test="WdatePickerEnd != null and WdatePickerEnd != ''">
+			 	<![CDATA[ AND createtime <= #{WdatePickerEnd}  ]]>      
+		    </if>	
+			<if test="allid != null and allid != ''">
+			and qyid in 
+			<foreach item="item" index="index" collection="allid" open="(" separator="," close=")">  
+			  #{item}  
+			</foreach>
+			</if>
+			and subscribe = 1 
+			</where>
+	</select>
+	
+	<!-- <insert id="save" parameterType="com.hanson.model.Seconduser">
+	insert into u_seconduser 
+	</insert> -->
+	
+	<select id="tadeilUserData" resultType="map" parameterType="map">
+		SELECT
+			count(*) as number,
+			(
+				SELECT
+					count(*)
+				FROM
+					u_seconduser
+				WHERE
+					createtime >= #{startDate}
+				AND createtime &lt;= #{endDate}
+			) as newfans,
+			(
+				SELECT
+					count(*)
+				FROM
+					u_seconduser
+				WHERE
+				createtime &lt;= #{endDate}
+			) as cumulativefans,
+			(
+				SELECT
+					count(*)
+				FROM
+					u_seconduser
+				WHERE
+					createtime >= #{startDate}
+				AND createtime &lt;= #{endDate}
+				AND subscribe = 0
+			) as numberoffansonfoot,
+			(
+				(
+					SELECT
+						count(*)
+					FROM
+						u_seconduser
+					WHERE
+					createtime >= #{startDate}
+				AND createtime &lt;= #{endDate}
+				) - (
+					SELECT
+						count(*)
+					FROM
+						u_seconduser
+					WHERE
+					createtime >= #{startDate}
+				AND createtime &lt;= #{endDate}
+					AND subscribe = 0
+				)
+			) as netfannumber
+		FROM
+			u_seconduser
+	</select>
+</mapper>

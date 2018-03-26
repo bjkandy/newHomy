@@ -1,0 +1,683 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hanson.mapper.ProductMapper">
+	
+	<select id="findUniqueById" resultType="com.hanson.model.Product" parameterType="java.lang.Long">
+		 select * from  pdt_product where id = #{0}
+	</select>
+	
+	<select id="findUniqueByQyid" resultType="com.hanson.model.Product" parameterType="java.lang.Long">
+		 select * from  pdt_product where qyid = #{qyid}
+	</select>
+	
+	<!-- 插入-对象 -->
+  	<insert id="save" parameterType="com.hanson.model.Product" useGeneratedKeys="true" keyProperty="id">
+            INSERT INTO pdt_product  
+            <trim prefix="(" suffix=")" suffixOverrides=",">  
+                <if test="name != null">  
+                    `name`,  
+                </if>  
+            	<if test="price != null">  
+                    `price`,  
+                </if>  
+                <if test="oldprice != null">  
+                    `oldprice`,  
+                </if>  
+                <if test="createtime != null">  
+                    `createtime`,  
+                </if>  
+                <if test="isnew != null">  
+                    `isnew`,  
+                </if>
+                <if test="status != null">  
+                    `status`,  
+                </if>
+                <if test="sellcount != null">  
+                    `sellcount`,  
+                </if>
+                <if test="unit != null">  
+                    `unit`,  
+                </if> 
+                <if test="catalogid != null">  
+                    `catalogid`,  
+                </if>
+                <if test="qyid != null">  
+                    `qyid`,  
+                </if>
+                <if test="bdelete != null">  
+                    `bdelete`,  
+                </if>
+                producttype
+            </trim>  
+            <trim prefix="values (" suffix=")" suffixOverrides=","> 
+            	<if test="name != null">  
+                    #{name,jdbcType=VARCHAR},  
+                </if>  
+            	<if test="price != null">  
+                    #{p,ce,jdbcType=BIGINT},  
+                </if>  
+                <if test="oldprice != null">  
+                    #{oldprice,jdbcType=BIGINT},  
+                </if>  
+                <if test="createtime != null">  
+                    #{createtime,jdbcType=TIMESTAMP},  
+                </if>  
+                <if test="isnew != null">  
+                    #{isnew,jdbcType=VARCHAR},  
+                </if>
+                <if test="status != null">  
+                    #{status,jdbcType=INTEGER},  
+                </if>
+                <if test="sellcount != null">  
+                    #{sellcount,jdbcType=INTEGER},  
+                </if>
+                <if test="unit != null">  
+                    #{unit,jdbcType=VARCHAR},  
+                </if>
+                <if test="catalogid != null">  
+                    #{catalogid,jdbcType=VARCHAR},  
+                </if>
+                <if test="qyid != null">  
+                    #{qyid,jdbcType=BIGINT},  
+                </if>
+                <if test="bdelete != null">  
+                    #{bdelete,jdbcType=INTEGER},  
+                </if>
+            	10
+            </trim>  
+    </insert>
+    
+    <!-- 查询条件 -->
+	<sql id="where">	
+		<where>
+			and (qyid = #{qyid})
+			
+			<if test="id != null">
+	    		<![CDATA[ and id = #{id} ]]>
+	    	</if>
+			
+			<if test="name != null and name != '' ">
+	    		<![CDATA[ and name like CONCAT('%',#{name},'%') ]]>
+	    	</if>
+	    	
+	    	<if test="status != null">
+	    		<![CDATA[ and status = #{status} ]]>
+	    	</if>
+	    	
+	    	<if test="producttype != null">
+	    		<![CDATA[ and producttype = #{producttype} ]]>
+	    	</if>
+	    	
+	    	<if test="kdate != null and kdate != ''">
+				  AND createtime >= str_to_date('${kdate}','%Y-%m-%d %H:%i:%s')        
+			</if>
+			
+		    <if test="jdate != null and jdate != ''">
+			      AND createtime &lt;=DATE_ADD('${jdate}',INTERVAL +1 DAY)      
+		    </if>
+    	</where>
+  	</sql>
+  	
+  	<!-- 排序条件 -->
+  	<sql id="page_sort">
+		<!--排序条件 -->
+		<if test="ORDER_BY_MENU!=null">
+			<choose>
+				<when test="ORDER_BY_DESC!=null">
+		 			<![CDATA[ order by ${ORDER_BY_MENU} ${ORDER_BY_DESC}]]>
+				</when>
+				<otherwise>
+					<![CDATA[ order by ${ORDER_BY_MENU}]]>
+				</otherwise>
+			</choose>
+		</if>
+	</sql>
+	
+	<!-- 分页查询-统计总数 -->
+  	<select id="countTotles" parameterType="java.util.Map" resultType="long">
+	    SELECT
+			count(*)
+		FROM
+			pdt_product t
+	    <include refid="where" />
+  	</select>
+  	
+  	<!-- 分页查询 
+  	<select id="search" parameterType="java.util.Map" resultType="java.util.HashMap">
+	    SELECT
+			t.id,
+			t.name,
+			CASE t.producttype
+			    WHEN 10 THEN '照片'
+	            WHEN 20 THEN '照片框'
+	            WHEN 30 THEN '照片墙'
+	            WHEN 40 THEN '相册'
+	            WHEN 50 THEN '约拍'
+	            ELSE ''
+	        END as producttype,
+			(
+				SELECT
+												SUM(odt.number) AS count
+											FROM
+												pdt_product AS pd,
+												odr_order AS od,
+												odr_orderdetail AS odt
+											WHERE
+														pd.qyid = #{qyid}
+													AND pd.ID = odt.productid
+													AND od.orderid = odt.orderid
+													AND od.createdate >= DATE_FORMAT(NOW(),'%Y-%m')
+													and pd.id=t.id
+													and od.paystatus = 10
+													
+				select SUM(odt.number) from odr_orderdetail as odt,odr_order AS od where odt.productid=t.id
+													
+													
+														
+			
+			) AS yxl,
+			IFNULL((
+				SELECT
+					sum(t1.salecount)
+				FROM
+					pdt_specvalue t1
+				WHERE
+					t.id = t1.productid
+			),0) AS salecount,
+			CASE t.status
+			    WHEN 1 THEN '上架'
+	            WHEN 2 THEN '下架'
+	            ELSE ''
+	        END as status,
+	        t.standardprice,
+			date_format(t.createtime,'%Y-%m-%d') as createtime
+		FROM
+			pdt_product t
+	    <include refid="where" />
+	    <include refid="page_sort" />
+	    limit #{BEGIN_ROW},#{PAGE_SIZE}
+  	</select>
+  	-->
+  	
+  	<select id="search" parameterType="java.util.Map" resultType="java.util.HashMap">
+ 							 SELECT
+								det.ID AS id,
+								det.name AS name,
+								det.createtime as createtime,
+								CASE det.producttype
+									    WHEN 10 THEN '照片'
+							            WHEN 20 THEN '照片框'
+							            WHEN 30 THEN '照片墙'
+							            WHEN 40 THEN '相册'
+							            WHEN 50 THEN '约拍'
+							            ELSE ''
+							        END as producttype,
+								det.sellcount AS salecount,
+								CASE det.status
+		                    		WHEN 0 then '增新 不上线'
+									WHEN 1 then '上线' 
+									WHEN 2 then '下线' 
+		                  			  ELSE ''
+		               			 END as status,
+								 CASE 
+									WHEN det.standardprice>0 THEN det.standardprice/100
+									ELSE 0
+		           				 END AS standardprice,
+								det.mainimg AS mainimg,
+								det.plastic AS plastic,
+								ifnull(num.count,0) AS yxl
+							FROM
+								(
+									SELECT
+										pdt.ID AS ID,
+										pdt.name AS name,
+										convert(pdt.createtime,date) as createtime,
+										pdt.producttype AS producttype,
+										pdt.sellcount AS sellcount,
+										pdt.status AS status,
+										pdt.standardprice as standardprice,
+										pdt.mainimg AS mainimg,
+										pdt.plastic AS plastic
+									FROM
+										pdt_product AS pdt
+									WHERE
+											pdt.qyid = #{qyid}
+										<if test="producttype != null and producttype != ''">
+											AND pdt.producttype =#{producttype}
+										</if>
+										 <if test="id != null and id != ''">
+											AND pdt.ID ='${id}%'
+										</if>
+										 <if test="name != null and name != ''">
+											AND pdt.name like'${name}%'
+										</if>
+										 <if test="status != null and status != ''">
+											AND pdt.status =#{status}
+										</if>
+										
+								) det
+										LEFT JOIN (
+											SELECT
+												odt.productid AS productid,
+												SUM(odt.number) AS count
+											FROM
+												pdt_product AS pd LEFT JOIN
+												odr_orderdetail AS odt on(pd.ID = odt.productid)
+												LEFT JOIN odr_order AS od on(od.orderid = odt.orderid)
+											WHERE
+														pd.qyid = #{qyid}
+													AND od.createdate >= DATE_FORMAT(NOW(),'%Y-%m')
+													and od.paystatus = 10
+													<if test="producttype != null and producttype != ''">
+														AND odt.producttype =#{producttype}
+													</if>
+													<if test="id != null and id != ''">
+														AND pd.ID ='${id}%'
+													</if>
+													 <if test="name != null and name != ''">
+														AND pd.name like '${name}%'
+													</if>
+													 <if test="status != null and status != ''">
+														AND pd.status =#{status}
+													 </if>
+													 
+														GROUP BY
+															odt.productid								
+										) AS num ON (det.ID = num.productid)
+							LIMIT #{BEGIN_ROW},#{PAGE_SIZE}
+							</select>
+						
+  	
+  	<!-- 删除产品 -->
+  	<delete id="deleteProduct" parameterType="com.hanson.model.Product">
+  		delete from pdt_product where id = #{id}
+  	</delete>
+  	
+  	<insert id="saveProduct" parameterType="com.hanson.model.ProductVO" useGeneratedKeys="true" keyProperty="ID">
+            INSERT INTO pdt_product  
+            <trim prefix="(" suffix=")" suffixOverrides=",">  
+            	<if test="qyid != null">  
+                    `qyid`,  
+                </if>
+                <if test="name != null">  
+                    `name`,  
+                </if>
+                <if test="catalogid != null">  
+                    `catalogid`,  
+                </if>
+                <if test="isnew != null">  
+                    `isnew`,  
+                </if>
+                <if test="sale != null">  
+                    `sale`,  
+                </if>
+                <if test="isrecommend != null">  
+                    `isrecommend`,  
+                </if>
+                <if test="status != null">  
+                    `status`,  
+                </if>
+                <if test="sellcount != null">  
+                    `sellcount`,  
+                </if>
+                <if test="unit != null">  
+                    `unit`,  
+                </if>
+                <if test="score != null">  
+                    `score`,  
+                </if>
+                <if test="sort != null">  
+                    `sort`,  
+                </if>
+                <if test="bdelete != null">  
+                    `bdelete`,  
+                </if>
+                <if test="specnameids != null">  
+                    `specnameids`,  
+                </if>
+                <if test="producttype != null">  
+                    `producttype`,  
+                </if>
+                <if test="standardprice != null">  
+                    `standardprice`,  
+                </if>
+                <if test="mainimg != null">  
+                    `mainimg`,  
+                </if>
+                <if test="scrollimg != null">  
+                    `scrollimg`,  
+                </if>
+                <if test="brand != null">  
+                    `brand`,  
+                </if>
+                `createtime`
+            </trim>  
+            <trim prefix="values (" suffix=")" suffixOverrides=","> 
+            	<if test="qyid != null">  
+                    #{qyid,jdbcType=INTEGER},  
+                </if>
+            	<if test="name != null">  
+                    #{name,jdbcType=VARCHAR},  
+                </if>  
+                <if test="catalogid != null">  
+                    #{catalogid,jdbcType=VARCHAR},  
+                </if>
+                <if test="isnew != null">  
+                    #{isnew,jdbcType=VARCHAR},  
+                </if>
+                <if test="sale != null">  
+                    #{sale,jdbcType=VARCHAR},  
+                </if>
+                <if test="isrecommend != null">  
+                    #{isrecommend,jdbcType=VARCHAR},  
+                </if>
+                <if test="status != null">  
+                    #{status,jdbcType=INTEGER},  
+                </if>
+                <if test="sellcount != null">  
+                    #{sellcount,jdbcType=INTEGER},  
+                </if>
+                <if test="unit != null">  
+                    #{unit,jdbcType=VARCHAR},  
+                </if>
+                <if test="score != null">  
+                    #{score,jdbcType=INTEGER},  
+                </if>
+                <if test="sort != null">  
+                    #{sort,jdbcType=INTEGER},  
+                </if>
+                <if test="bdelete != null">  
+                    #{bdelete,jdbcType=INTEGER},  
+                </if>
+                <if test="specnameids != null">  
+                    #{specnameids,jdbcType=VARCHAR},  
+                </if>
+                <if test="producttype != null">  
+                    #{producttype,jdbcType=VARCHAR},  
+                </if>
+                <if test="standardprice != null">  
+                    #{standardprice,jdbcType=FLOAT},  
+                </if>
+                <if test="mainimg != null">  
+                    #{mainimg,jdbcType=VARCHAR},  
+                </if>
+                <if test="scrollimg != null">  
+                    #{scrollimg,jdbcType=VARCHAR},  
+                </if>
+                <if test="brand != null">  
+                    #{brand,jdbcType=VARCHAR},  
+                </if>
+                now()
+            </trim>  
+    </insert>
+  	
+  	<select id="findPhotoFrame" resultType="com.hanson.model.ProductVO">
+		SELECT
+			*
+		FROM
+			pdt_product t
+		WHERE
+			t.qyid = 103
+		AND t.producttype = 20
+		AND t. STATUS = 1
+	</select>
+	<select id="FindalbumProduct" resultType="com.hanson.model.ProductVO">
+	  SELECT * FROM pdt_product WHERE qyid=103 AND producttype=40  AND STATUS = 1 
+	</select>
+	<select id="FindStoreProductbywhere" resultType="com.hanson.model.ProductVO" parameterType="java.util.Map">
+	    SELECT * FROM pdt_product where qyid=#{qyid} AND producttype=#{producttype} AND  status = #{status}  
+	</select>
+	<!-- 根据ID查询产品 -->
+	<select id="findProductById" parameterType="com.hanson.model.ProductVO" resultType="com.hanson.model.ProductVO">
+		select 
+	       	ID,
+			qyid,
+			name,
+			catalogid,
+			isnew,
+			sale,
+			isrecommend,
+			status,
+			sellcount,
+			unit,
+			score,
+			sort,
+			bdelete,
+			specnameids,
+			producttype,
+			standardprice/100 as standardprice,
+			mainimg,
+			scrollimg,
+			brand,
+			createtime,
+			plastic
+		from pdt_product t 
+		where t.ID = #{ID}
+	</select>
+	
+	<!-- 修改产品 -->
+	<update id="updateProduct" parameterType="com.hanson.model.ProductVO">
+		 update pdt_product
+		 <trim prefix="set" suffixOverrides=",">
+		 		<if test="qyid != null"> 
+            		qyid = #{qyid},  
+                </if>  
+                <if test="name != null">  
+                   name=  #{name},  
+                </if>  
+                <if test="catalogid != null">  
+                   catalogid = #{catalogid},
+                </if>  
+                <if test="isnew != null">  
+                    isnew = #{isnew},
+                </if>  
+                <if test="sale != null">  
+                    sale = #{sale}, 
+                </if>  
+                <if test="isrecommend != null">  
+                    isrecommend = #{isrecommend}, 
+                </if>  
+                <if test="status != null">  
+                    status = #{status}, 
+                </if>  
+                <if test="sellcount != null">  
+                     sellcount = #{sellcount}, 
+                </if>  
+                <if test="unit != null">  
+                     unit = #{unit},  
+                </if>  
+                <if test="score != null">  
+                    score = #{score}, 
+                </if>  
+                <if test="sort != null">  
+                    sort = #{sort}, 
+                </if>  
+                <if test="bdelete != null">  
+                    bdelete = #{bdelete}, 
+                </if>  
+                <if test="specnameids != null">  
+                    specnameids = #{specnameids}, 
+                </if>  
+                <if test="producttype != null">  
+                    producttype = #{producttype}, 
+                </if>  
+                <if test="standardprice != null">  
+                    standardprice = #{standardprice},
+                </if>  
+                <if test="mainimg != null">  
+                    mainimg = #{mainimg}, 
+                </if>  
+                <if test="scrollimg != null">  
+                    scrollimg = #{scrollimg}, 
+                </if>  
+                <if test="brand != null">  
+                    brand = #{brand},
+                </if>  
+                <if test="createtime != null">  
+                    createtime = #{createtime},  
+                </if>
+                <if test="plastic != null">  
+                    plastic = #{plastic},  
+                </if>
+		 </trim>
+		 WHERE id=#{ID}
+	</update>
+	
+	<insert id="saveProductList" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="ID">
+   insert into pdt_product (name,qyid,isrecommend,status,score,sort,bdelete,specnameids,standardprice,mainimg,scrollimg,brand)
+   values
+    <foreach collection="list" item="item" index="index" 
+         separator=","> 
+         (
+         #{item.name},
+         #{item.qyid},
+         #{item.isrecommend},
+         #{item.status},
+         #{item.score},
+         #{item.sort},
+         #{item.bdelete},
+         #{item.specnameids},
+         #{item.standardprice},
+         #{item.mainimg},
+         #{item.scrollimg},
+         #{item.brand}
+         ) 
+     </foreach> 
+ </insert>
+ 
+ <select id="productExcel" parameterType="Map" resultType="Map" >
+				 	SELECT
+						det.ID AS ID,
+						ifnull(det.name,'') AS name,   						
+               		    CASE det.producttype
+                            WHEN 10 then '照片'
+							WHEN 20 then '照片框' 
+							WHEN 30 then '照片墙' 
+							WHEN 40 then '相册' 
+							WHEN 50 then '约拍'
+                  		  ELSE ''
+               			 END as producttype,
+						det.sellcount AS totalsellcount,								
+						CASE det.status
+                    		WHEN 0 then '增新 不上线'
+							WHEN 1 then '上线' 
+							WHEN 2 then '下线' 
+                  			  ELSE ''
+               			 END as status,
+               			 CASE 
+							WHEN det.standardprice>0 THEN det.standardprice/100
+							ELSE 0
+           				 END AS standardprice,   
+						CONVERT(det.createtime,date) as createtime,						
+						ifnull(num.count,0) AS monthsellcount
+							FROM
+								(
+									SELECT
+										pdt.ID AS ID,
+										pdt.name AS name,
+										pdt.producttype AS producttype,
+										pdt.sellcount AS sellcount,
+										pdt.status AS status,
+										pdt.standardprice as standardprice,
+										pdt.createtime as createtime
+									FROM
+										pdt_product AS pdt
+									WHERE
+											pdt.qyid=#{qyid}
+										<if test="producttype != null and producttype != ''">
+											AND pdt.producttype =#{producttype}
+										</if>
+										 <if test="id != null and id != ''">
+											AND pdt.ID ='${id}%'
+										</if>
+										 <if test="name != null and name != ''">
+											AND pdt.name like'${name}%'
+										</if>
+										 <if test="status != null and status != ''">
+											AND pdt.status =#{status}
+										</if>
+										 <if test="kdate != null and kdate != ''">
+										   	 AND convert(od.createdate,date) >= #{kdate}	       
+									      </if>
+									      <if test="jdate != null and jdate != ''">
+											    AND #{jdate} >= convert(od.createdate,date) 	       
+									      </if> 
+										
+								) det
+										LEFT JOIN (
+											SELECT
+												odt.productid AS productid,
+												SUM(odt.number) AS count
+											FROM
+												pdt_product AS pd LEFT JOIN
+												odr_orderdetail AS odt on(pd.ID = odt.productid)
+												LEFT JOIN odr_order AS od on(od.orderid = odt.orderid)
+											WHERE
+														
+														pd.qyid=#{qyid}
+													AND od.createdate >= DATE_FORMAT(NOW(),'%Y-%m')
+													and od.paystatus = 10
+													<if test="producttype != null and producttype != ''">
+														AND odt.producttype =#{producttype}
+													</if>
+													<if test="id != null and id != ''">
+														AND pd.ID ='${id}%'
+													</if>
+													 <if test="name != null and name != ''">
+														AND pd.name like '${name}%'
+													</if>
+													 <if test="status != null and status != ''">
+														AND pd.status =#{status}
+													 </if>
+														GROUP BY
+															odt.productid								
+										) AS num ON (det.ID = num.productid)
+ </select>
+ 	<select id="productInfoExcel" parameterType="java.util.Map" resultType="java.util.HashMap">
+	   										SELECT
+												pd.ID as id,
+												ifnull(ps.specinfo,'') as specinfo,
+												ifnull(ps.size,'') as size,
+												ifnull(ps.color,'') as color,
+												FORMAT((CASE
+													WHEN ps.price>0 THEN ps.price/100
+													ELSE 0
+												END),2) AS price,
+												FORMAT((CASE
+													WHEN ps.packageprice>0 THEN ps.packageprice/100
+													ELSE 0
+												END),2) AS packageprice,
+												FORMAT((CASE
+													WHEN ps.plasticprice>0 THEN ps.plasticprice/100
+													ELSE 0
+												END),2) AS plasticprice,
+												ps.inventory as inventory,
+												ifnull(SUM(odt.number),0) AS mounthcount,
+                        						ps.salecount as totalcount  
+											FROM
+														pdt_product AS pd 
+												LEFT JOIN pdt_specvalue as ps ON(pd.ID=ps.productid)
+												LEFT JOIN odr_orderdetail AS odt on(ps.id=odt.specid)
+												LEFT JOIN odr_order AS od on(od.orderid = odt.orderid)
+											WHERE	
+														1=1		
+													and pd.qyid=#{qyid}
+													AND od.createdate >= DATE_FORMAT(NOW(),'%Y-%m')
+													and od.paystatus = 10
+													<if test="producttype != null and producttype != ''">
+														AND odt.producttype =#{producttype}
+													</if>
+													<if test="id != null and id != ''">
+														AND pd.ID ='${id}%'
+													</if>
+													 <if test="name != null and name != ''">
+														AND pd.name like '${name}%'
+													</if>
+													 <if test="status != null and status != ''">
+														AND pd.status =#{status}
+													 </if>
+														GROUP BY
+																ps.id
+		</select>
+	
+</mapper>

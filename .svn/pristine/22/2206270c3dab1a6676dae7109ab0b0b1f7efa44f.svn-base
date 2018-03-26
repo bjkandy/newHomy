@@ -1,0 +1,73 @@
+<link rel="stylesheet" type="text/css" href="css/table.css"/>
+<link rel="stylesheet" href="css/common.css" />
+<!--快速查询-->
+<div class="quick_search">
+	<span>项目名:<input type="text"/></span>
+	<span>创建日期:<input type="text"/>~<input type="text"/></span>
+</div>
+<!--对表单进行操作-->
+<div class="from_handle">
+	<a href="#myModal" role="button" data-toggle="modal" ><b></b>录入</a>
+	<a href="#"><b></b>编辑</a>
+	<a href="#"><b></b>删除</a>
+	<a href="#"><b></b>查询</a>
+	<a href="#"><b></b>重置</a>
+</div>
+<!--模态-录入-->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+  	<div class="modal-dialog" role="document">
+    	<div class="modal-content">
+      		<div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		        <h4 class="modal-title" id="myModalLabel">录入</h4>
+		    </div>
+		    <form action="" method="post"  class="form-horizontal">
+		    <div class="modal-body">
+				<div class="control-group">
+					<label class="control-label" for="inputCName">公司名称</label>
+					<div class="controls">
+					    <input type="text" id="inputCName" placeholder="公司名称">
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label" for="inputCName1">公司名称</label>
+					<div class="controls">
+					    <input type="text" id="inputCName1" placeholder="公司名称1">
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label" for="inputCName2">公司名称</label>
+					<div class="controls">
+					    <input type="text" id="inputCName2" placeholder="公司名称2">
+					</div>
+				</div>
+		    </div>				
+		  	<div class="modal-footer">
+		    	<button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+		    	<button type="submit" class="btn btn-primary">确定</button>
+		  	</div>
+		    </form>
+		</div>
+	</div>
+</div>
+<!--表单-->
+<table id="cs_table" class="datatable"></table>
+<script src="js/table.js" type="text/javascript" charset="utf-8"></script>
+<script>
+	var data = [];
+    for(var i=0;i<20;i++){
+        data[i] = {id:i+1,time:"2017-4-17",qyid:"11111",name:"汇美微传",fensi:i*10+2,dingdan:0,zhaopian:2+i};
+    }
+    var cs = new table({
+        "tableId":"cs_table",    //必须
+        "headers":["","时间","公司ID","公司名称","粉丝数量","订单金额增量","照片增量"],   //必须
+        "data":data,        //必须
+        "displayNum": 6,    //必须   默认 10
+        "groupDataNum":9  //可选    默认 10
+	});	
+	//点击表格添加active
+	$('#cs_table').on("click","td",function(){
+		console.log(this);
+		$(this).parent().addClass("active").siblings().removeClass("active");
+	})
+</script>

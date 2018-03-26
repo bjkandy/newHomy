@@ -1,0 +1,113 @@
+package com.hanson.service.impl;
+
+import java.util.List;
+import java.util.Map;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import com.hanson.common.util.Page;
+import com.hanson.mapper.CommentMapper;
+import com.hanson.service.CommentService;
+
+@Service
+public class CommentServiceImpl implements CommentService {
+
+	 @Autowired
+	 private CommentMapper commentMapper;
+	 
+	@Override
+	public Page getPageList(Page page,Map map) {
+		map.put("BEGIN_ROW", (page.getPageNo()-1) * page.getPageSize());
+		map.put("PAGE_SIZE", page.getPageSize());
+		map.put("ORDER_BY_MENU", page.getOrderBy());
+		map.put("ORDER_BY_DESC", page.getOrder());
+	    long totalCount =commentMapper.getCommentCount(map);
+		page.setTotalCount(totalCount);
+		if(totalCount >0){
+			List<Map<String,Object>> result=commentMapper.getPageList(map);
+			  //时间日期格式化。
+		  for(Map<String,Object> res:result) {
+		  res.put("checkbox", "<input type='checkbox' value='"+res.get("id")+"'/>");
+		  res.put("createtime",res.get("createtime").toString());
+		  if(res.get("producttype").equals("20")&&res.get("proimg")!=null)
+		  {
+	//	  if(res.get("proimg")==null){
+			  res.put("name","<div style=\"color: #FF9900\">"+res.get("name")+"</div>"+"<br>"+"<div style=\"color: #666\">"+res.get("color")+";"+res.get("size")+";"+"是否配照片输出:否"+"</div>");			    
+		  }else if(res.get("producttype").equals("20")&&res.get("proimg")==null){
+			  res.put("name","<div style=\"color: #FF9900\">"+res.get("name")+"</div>"+"<br>"+"<div style=\"color: #666\">"+res.get("color")+";"+res.get("size")+";"+"是否配照片输出:配照片输出"+"</div>");			    
+		  }else{
+		  res.put("name","<div style=\"color: #FF9900\">"+res.get("name")+"</div>"+"<br>"+"<div style=\"color: #666\">"+res.get("color")+";"+res.get("size")+"</div>");			  
+		  }
+	//	  }
+          if(Integer.parseInt(res.get("ishide").toString())==1)
+		  {
+			res.put("content", "");  
+		  }else{
+			  StringBuilder sb = createCommentContent(res);
+		  res.put("content",sb.toString());	
+		  }
+		  res.put("action", "<a onclick='detail("+res.get("id")+")'>详情</a>");
+	      }
+			page.setResult(result);
+		}
+		return page;
+	}
+
+	 //设置评价内容。
+	private StringBuilder createCommentContent(Map<String, Object> res) {
+		int star=Integer.parseInt(res.get("starlevel").toString());
+          StringBuilder sb=new StringBuilder();
+      sb.append("<div style=\"max-width: 500px;  min-width: 200px; text-align: left;\">")
+	      	.append("<div  class=\"clearfix\"  style=\"font-size: 18px!important;\">")
+		          .append("<div class=\"pull-left\">");
+					          if(star<=2){
+					        	sb.append("<span style=\"font-size:0.5em\">不满意:</span>");  
+					          }else if(star==3||star==4){
+					            sb.append("<span style=\"font-size:0.5em\">一般:</span>");
+					          }else if(star==5){
+					            sb.append("<span style=\"font-size:0.5em\">非常满意:</span>");
+					          }
+					          for(int i=0;i<star;i++){
+					        	  sb.append("<i class='iconfont icon-star-full'></i>");
+					          }
+					          for(int j=0;j<5-star;j++){
+					        	  sb.append("<i class='iconfont icon-star'></i>");  
+					          }
+		          sb.append("</div>")	  
+		          	.append("<div class=\"pull-right\">")
+		          		.append("<i class=\"iconfont icon-zan\"></i>")
+		          		.append("<span>").append(res.get("nod")).append("</span>")
+		          	.append("</div>")
+	          	.append("</div>")
+	          	.append("<div>").append(res.get("content")).append("</div>")
+	          	.append("<div style=\"color: #666;\">").append(res.get("commenttab")).append("</div>");
+           if(res.get("rcontent")!=null){
+        	   	sb.append("<span style=\"color:#FF9900\">").append("商家回应:").append("</span>").append(res.get("rcontent"));
+           }
+           sb.append("</div>");
+		return sb;
+	}
+	
+	@Override
+	public int showComment(int id) {
+		// TODO Auto-generated method stub
+		return commentMapper.showComment(id);
+	}
+
+	@Override
+	public int hideComment(int id) {
+		return commentMapper.hideComment(id);
+	}
+
+	@Override
+	public int deleteComment(int id) {
+		// TODO Auto-generated method stub
+		return commentMapper.deleteComment(id);
+	}
+
+	@Override
+	public Map<String, Object> getCommentDetial(int id) {
+   
+		return commentMapper.getCommentDetial(id);
+	}
+	
+}

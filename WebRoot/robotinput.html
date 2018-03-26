@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html>
+<head>
+	
+	<meta charset="utf-8"/>
+	<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"/>
+	<meta http-equiv="X-UA-Compatible" content="ie=edge,chrome=1"/>
+	<meta name="format-detection" content="telephone=no"/>
+	<meta name="format-detection" content="email=no"/>
+	
+	<script src="https://unpkg.com/vue/dist/vue.min.js"></script>
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+	
+	<style>
+		#app {
+			font-size: 20px;
+		}
+		
+		input, textarea {
+			font-size: 24px;
+		}
+		
+		.df {
+			display: flex;
+		}
+		
+		.f1 {
+			flex: 1;
+		}
+		
+		.f2 {
+			flex: 2;
+		}
+		
+		.f3 {
+			flex: 3;
+		}
+		
+		.f4 {
+			flex: 4;
+		}
+		
+		.f5 {
+			flex: 5;
+		}
+		
+		.f6 {
+			flex: 6;
+		}
+		
+		.f7 {
+			flex: 7;
+		}
+		
+		.f8 {
+			flex: 8;
+		}
+		
+		.f9 {
+			flex: 9;
+		}
+		
+		.f10 {
+			flex: 10;
+		}
+		
+		.mt20 {
+			margin-top: 20px;
+		}
+		
+		.mt10 {
+			margin-top: 10px;
+		}
+		
+		.text-center {
+			text-align: center;
+		}
+		
+		.btn {
+			background-color: transparent;
+			border-radius: 5px;
+		}
+		
+		.border {
+			border: 1px solid #999
+		}
+		
+		.btn.active {
+			background-color: #2e6da4;
+		}
+		
+		.btn.big {
+			padding: 10px 20px;
+		}
+		
+		.pop-view {
+			background-color: #fff;
+			width: 60%;
+			margin: 100px auto;
+			padding: 50px;
+		}
+		
+		input, textarea, select {
+			font-size: 20px;
+			line-height: 1.5;
+		}
+		
+		textarea {
+			padding: 10px;
+		}
+		
+		input {
+			padding-left: 10px;
+		}
+	</style>
+</head>
+
+<body>
+
+<div id="app" style="position: relative; min-height: 800px; padding: 50px ;">
+	<h3>
+		关键词回复</h3>
+	<div style="width:400px; height: 50px; display:flex; text-align:center;">
+		<button class="btn" :class="{active: curKey=== 'keyList'}" @click="curKey = 'keyList'">
+			关键词列表
+		</button>
+		<button class="btn" :class="{active: curKey=== 'defaultReply'}" @click="onTouchDefaultItem">
+			默认回复
+		</button>
+	</div>
+	
+	<div>
+		<!-- 关键词列表 -->
+		<div class="keyList" style="margin-top: 10px;" v-if=" curKey=== 'keyList'">
+			<!-- 添加按钮 -->
+			<div class="df">
+				<div class="f5">
+					<input type="" placeholder="输入要搜索关键字" v-model="searchKey">
+					<span @click="onTouchSearch">搜索</span>
+				</div>
+				<div class="f5" style="padding: 10px; text-align: right;">
+					<button class="btn" style="padding: 10px;" @click="onTouchAddKey">
+						添加关键字
+					</button>
+				</div>
+			</div>
+			<table border="2" style="width: 100%;">
+				<thead>
+				<tr>
+					<th class="text-center">
+						规则名称
+					</th>
+					<th class="text-center">
+						匹配类型
+					</th>
+					<th class="text-center">
+						关键词
+					</th>
+					<th class="text-center">
+						回复内容
+					</th>
+					<th class="text-center">
+						操作
+					</th>
+				</tr>
+				</thead>
+				<tbody>
+				<tr v-for="item  in list">
+					<td class="text-center">
+						{{item.name}}
+					</td>
+					<td class="text-center">
+						{{item.keyType===0?'全匹配':
+						'半匹配'}}
+					</td>
+					<td class="text-center">
+						{{item.key}}
+					</td>
+					<td>
+						{{item.content}}
+					</td>
+					<td class="text-center">
+						<a href="javascript:void(0);" @click="onTouchEdit(item)">编辑</a>
+						<a href="javascript:void(0);" @click="onTouchDelete(item)">删除</a>
+					</td>
+				</tr>
+				
+				</tbody>
+			</table>
+		</div>
+		
+		<!-- 默认回复 -->
+		<div class="defaultReply" v-if=" curKey=== 'defaultReply'">
+			<div class="mt20">
+				<div>
+					回复内容:
+				</div>
+				<div class="mt10">
+					<textarea cols="60" rows="10" placeholder="请输入回复内容" style="width: 100%; padding:  10px;" v-model="curItem.content" @input="onChangeTextarea" @focus="emotion.isShow=false"></textarea>
+					<div class="df" style="height: 50px;">
+						<div class="f1" style="position: relative;">
+							<span @click="emotion.isShow=!emotion.isShow">表情</span>
+							<div style="position:absolute; width: 400px; height: 145px; background-color: transparent; bottom: 50px; left: 0;">
+								<div style="float: left;" v-if="emotion.isShow" v-for="item in emotion.list" @click="onTouchEmotion(item)">
+									<img :src="item.imgUrl">
+								</div>
+							</div>
+						</div>
+						<div class="f10" style="text-align: right; color:#999;">
+							还可以输入600个字，按下Enter键换行
+						</div>
+					</div>
+				</div>
+				<div>
+					实际效果
+				</div>
+				<div style="width: 100%; height: 200px ; padding: 10px;" ref="contentShow" class="border" v-html="curItem.showContent">
+					{{curItem.showContent}}
+				</div>
+			</div>
+			<div class="text-center">
+				<button class="btn active" style="width: 100px ; line-height: 30px;" @click="onTouchSave">
+					保存
+				</button>
+				<button class="btn " style="width: 100px ; line-height: 30px;" @click="curItem.content = ''">
+					删除回复
+				</button>
+			</div>
+		</div>
+	</div>
+	
+	<!-- 添加/编辑 关键词 -->
+	<div style="position: absolute; top: 0;bottom: 0;left: 0;right: 0; background-color: rgba(0,0,0,0.5);" v-if="popView.isShow">
+		<div class="pop-view">
+			<div class="df mt20">
+				<div class="f2">
+					规则名称
+				</div>
+				<label class="f3">
+					<input type="text" placeholder="请输入规则名称" v-model="curItem.name">
+				</label>
+				<div class="f3" style="color: #999">
+					规则名最多60个字
+				</div>
+			</div>
+			
+			<div class="df mt20">
+				<div class="f1">
+					关键词
+				</div>
+				<div class="f1">
+					<select v-model="curItem.keyType">
+						<option value="1">
+							半匹配
+						</option>
+						<option value="0">
+							全匹配
+						</option>
+					</select>
+				</div>
+				<label class="f6">
+					<input type="text" placeholder="请输入关键词" v-model="curItem.key">
+				</label>
+			</div>
+			<div class="mt20">
+				<div>
+					回复内容
+				</div>
+				<div class="mt10" style="position: relative;">
+					<textarea cols="10" rows="5" style="width: 100%; " placeholder="请输入回复内容" v-model="curItem.content" @input="onChangeTextarea" @focus="emotion.isShow=false"></textarea>
+				</div>
+				
+				<div class="df" style="height: 50px;">
+					<div class="f1" style="position: relative;">
+						<span @click="emotion.isShow=!emotion.isShow">表情</span>
+						<div style="position:absolute; width: 400px; height: 145px; background-color: transparent; bottom: 50px; left: 0;">
+							<div style="float: left;" v-if="emotion.isShow" v-for="item in emotion.list" @click="onTouchEmotion(item)">
+								<img :src="item.imgUrl">
+							</div>
+						</div>
+					</div>
+					<div class="f10" style="text-align: right; color:#999;">
+						还可以输入600个字，按下Enter键换行
+					</div>
+				</div>
+				
+				<div>
+					实际效果
+				</div>
+				<div style="width: 100%; height: 200px ; padding: 10px;" ref="contentShow" class="border" v-html="curItem.showContent">
+					{{curItem.showContent}}
+				</div>
+			</div>
+			<div class="mt20 text-center">
+				<button class="btn active big" @click="onTouchSave">
+					保存
+				</button>
+				<button class="btn big" @click="onTouchCancel">
+					取消
+				</button>
+			</div>
+		
+		</div>
+	</div>
+
+</div>
+
+<script>
+	let eList = []
+	let base = "http://manage-test.homy.cc"
+	const vm = new Vue({
+		el: "#app",
+		data: {
+			list: [],
+			curKey: "keyList",
+			curItem: {},
+			searchKey: "",
+			popView: {
+				isShow: false,
+			},
+			defaultItem: {},
+			emotion: {
+				list: [],
+				isShow: false
+			}
+		},
+		mounted() {
+			this.requestList()    //请求列表数据
+			this.requestDefaultMsg()
+			this.requestEmotion()
+		},
+		methods: {
+			requestDefaultMsg(){
+				axios.get(`${base}/robotreply/receiveTheMessage`).then(res => {
+					let data = res.data
+					let item  = data.robotreply
+					console.log(data);
+					if(data.success) {
+						this.defaultItem = {
+							id: item.id,
+							content: item.replycontent.replace(/\[n\]/g, "\n").replace(/\[t\]/g, " "),
+						}
+					}
+				}).catch(err => {
+					console.log(err)
+				})
+			},
+			requestEmotion(){
+				let emotionMap = window.emotionMap = this.emotionMap = {}
+				axios.get(`${base}/robotreply/emoticonList`).then(res => {
+					let data = res.data
+					console.log(data);
+					if(data.success) {
+						data.emoticon.forEach(item => {
+							let tempItem = {
+								code: item.code,
+								imgUrl: "http://img-test.homy.cc/" + item.imagepath,
+								remarks: item.remarks
+							}
+							this.emotion.list.push(tempItem)
+							emotionMap[item.remarks] = {
+								el: `<img src="${tempItem.imgUrl}">`,
+								code: item.code,
+							}
+						})
+					}
+				}).catch(err => {
+					console.log(err)
+				})
+			},
+			requestList(){
+				let tempList = []
+				let searchKey = this.searchKey
+				axios.get(`${base}/robotreply/keyList?rulename=${searchKey}`).then(res => {
+					let data = res.data
+					console.log(data)
+					let dataList = data.robotreplyList
+					if(dataList.length === 0) {
+						this.list = tempList
+						return
+					}
+					dataList.forEach(item => {
+						tempList.push({
+							id: item.id,
+							name: item.rulename,
+							key: item.keyword,
+							content: item.replycontent.replace(/\[n\]/g, "\n").replace(/\[t\]/g, " "),
+							keyType: item.matchingkeywordtype,
+						})
+					})
+					this.list = tempList
+				}).catch(err => {
+					console.log(err)
+				})
+			},
+			onTouchAddKey(){
+				this.curItem = {}
+				this.popView.isShow = true
+			},
+			onChangeTextarea(e){
+				let content = this.curItem.content
+				if(!content) return
+				this.curItem.showContent = this.replaceMethod(content)
+			},
+			onTouchEmotion(item){
+				let adder = `${item.remarks}`
+				if(this.curItem.content) this.curItem.content = `${this.curItem.content}${adder}`
+				else this.curItem.content = `${adder}`
+				let content = this.curItem.content
+				this.curItem.showContent = this.replaceMethod(content)
+				this.curItem = JSON.parse(JSON.stringify(this.curItem))
+			},
+			replaceMethod(content){
+				let showHtml = content.replace(/\r\n/g, "<br>").replace(/\n/g, "<br>").replace(/\s/g, '&nbsp;&nbsp;').replace(/\[[^\]]+?\]/g, matcher => {
+					let value = this.emotionMap[matcher]
+					//					console.log(value)
+					if(value)return this.emotionMap[matcher].el
+					return matcher
+				})
+				//				console.log(showHtml)
+				return showHtml
+			},
+			onTouchDefaultItem(){
+				this.curKey = "defaultReply"
+				this.curItem = this.defaultItem
+				this.curItem.showContent = this.replaceMethod(this.curItem.content)
+			},
+			onTouchSearch(){
+				this.requestList()
+			}, // 默认回复的消息
+			onTouchSave(){
+				let curItem = this.curItem
+				console.log(curItem)
+				if( this.curKey === "defaultReply"){
+					// 修改的是默认回复的消息
+					if(!curItem.content) {
+						alert("请输入回复内容")
+						return
+					}
+					let content = curItem.content.replace(/\r\n/g, "[n]").replace(/\n/g, "[n]").replace(/\s/g, '[t]').replace(/\[[^\]]+?\]/g, matcher => {
+						let map = this.emotionMap[matcher]
+						if(map)return map.code
+						return matcher
+					})
+					axios.get(`${base}/robotreply/editReceiveTheMessage?id=${this.curItem.id}&replycontent=${content}`).then(res => {
+						let data = res.data
+						console.log(data)
+						if(data.success) {
+							alert("修改成功")
+						}
+						else {
+							alert("修改失败")
+						}
+					}).catch(err => {
+						console.log(err)
+						alert("修改失败")
+					})
+					
+					
+					return
+				}
+				
+				if(!curItem.name) {
+					alert("请输入规则名称")
+					return
+				}
+				if(!curItem.key) {
+					alert("请输入关键字")
+					return
+				}
+				if(!curItem.content) {
+					alert("请输入回复内容")
+					return
+				}
+				let content = curItem.content.replace(/\r\n/g, "[n]").replace(/\n/g, "[n]").replace(/\s/g, '[t]').replace(/\[[^\]]+?\]/g, matcher => {
+					let map = this.emotionMap[matcher]
+					if(map)return map.code
+					return matcher
+				})
+				if(curItem.id) {
+					// 编辑的请求
+					axios.get(`${base}/robotreply/editKey?id=${curItem.id}&rulename=${curItem.name}&keyword=${curItem.key}&replycontent=${content}&matchingkeywordtype=${curItem.keyType}`).then(res => {
+						let data = res.data
+						console.log(data)
+						if(data.success) {
+							alert("编辑成功")
+							this.requestList()
+							this.curItem = {}
+							this.popView.isShow = false
+						}
+						else {
+							alert("编辑失败")
+						}
+					}).catch(err => {
+						console.log(err)
+						alert("编辑失败")
+					})
+				}
+				else {
+					// 添加关键词的请求
+					axios.get(`${base}/robotreply/insertKey?rulename=${curItem.name}&keyword=${curItem.key}&replycontent=${content}&matchingkeywordtype=${curItem.keyType}`).then(res => {
+						let data = res.data
+						console.log(data)
+						if(data.success) {
+							alert("添加成功")
+							this.requestList()
+							this.curItem = {}
+							this.popView.isShow = false
+						}
+						else {
+							alert("添加失败")
+						}
+					}).catch(err => {
+						console.log(err)
+						alert("添加失败")
+					})
+				}
+				
+			},
+			onTouchCancel(){
+				this.curItem = {}
+				this.popView.isShow = false
+			},
+			onTouchEdit(item){
+				this.curItem = JSON.parse(JSON.stringify(item))
+				this.curItem.showContent = this.replaceMethod(item.content)
+				this.popView.isShow = true
+			},
+			onTouchDelete(item){
+				let id = item.id
+				axios.get(`${base}/robotreply/deleteKey?id=${id}`).then(res => {
+					let data = res.data
+					if(data.success) {
+						alert("删除成功")
+						this.list.splice(this.list.indexOf(item), 1)
+					}
+					else {
+						alert("删除失败")
+					}
+				}).catch(err => {
+					console.log(err)
+					alert("删除失败")
+				})
+			}
+		},
+		filters: {
+			replace(content){
+				if(!content) return
+				let showHtml = content.replace(/\r\n/g, "<br>").replace(/\n/g, "<br>").replace(/\s/g, '&nbsp;&nbsp;').replace(/\[[^\]]+?\]/g, matcher => {
+					let value = emotionMap[matcher]
+					console.log(value)
+					if(value)return emotionMap[matcher].el
+					return matcher
+				})
+				console.log(showHtml)
+				return showHtml
+			}
+		}
+	})
+
+
+</script>
+
+</body>
+</html>

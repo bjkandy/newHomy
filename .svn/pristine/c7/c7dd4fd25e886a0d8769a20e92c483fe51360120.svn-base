@@ -1,0 +1,72 @@
+package com.hanson.service.impl;
+import java.util.List;
+import java.util.Map;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import com.hanson.common.util.Page;
+import com.hanson.mapper.CommentMapper;
+import com.hanson.service.CommentService;
+
+@Service
+public class CommentServiceImpl implements CommentService {
+
+	 @Autowired
+	 private CommentMapper commentMapper;
+	 
+	@Override
+	public Page getPageList(Page page,Map map) {
+		map.put("BEGIN_ROW", (page.getPageNo()-1) * page.getPageSize());
+		map.put("PAGE_SIZE", page.getPageSize());
+		map.put("ORDER_BY_MENU", page.getOrderBy());
+		map.put("ORDER_BY_DESC", page.getOrder());
+	    long totalCount =commentMapper.getCommentCount(map);
+		page.setTotalCount(totalCount);
+		if(totalCount >0){
+			List<Map<String,Object>> result=commentMapper.getPageList(map);
+			  //时间日期格式化。
+		  for(Map<String,Object> res:result) {
+		  res.put("checkbox", "<input type='checkbox' value='"+res.get("id")+"'/>");
+		  res.put("createtime",res.get("createtime").toString());
+		  res.put("name",res.get("name")+"<br>"+res.get("color")+"<br>"+res.get("size"));
+
+		  if(Integer.parseInt(res.get("ishide").toString())==1)
+		  {
+			res.put("content", "");  
+		  }else{
+		  res.put("content",res.get("starlevel")+" "+res.get("nod")+"<br>"+res.get("content"));	
+		  }
+//		  if(res.get("replystatus").toString().equals("1")){
+		  res.put("action", "<a  onclick='detail("+res.get("id")+")'>详情</a>");
+//		  }else{
+//		  res.put("action", "<a  onclick='detail("+res.get("id")+")'>详情</a>");  
+//	        	  }
+	      }
+			page.setResult(result);
+		}
+		return page;
+	}
+
+	@Override
+	public int showComment(int id) {
+		// TODO Auto-generated method stub
+		return commentMapper.showComment(id);
+	}
+
+	@Override
+	public int hideComment(int id) {
+		return commentMapper.hideComment(id);
+	}
+
+	@Override
+	public int deleteComment(int id) {
+		// TODO Auto-generated method stub
+		return commentMapper.deleteComment(id);
+	}
+
+	@Override
+	public Map<String, Object> getCommentDetial(int id) {
+       
+		return commentMapper.getCommentDetial(id);
+	}
+
+}

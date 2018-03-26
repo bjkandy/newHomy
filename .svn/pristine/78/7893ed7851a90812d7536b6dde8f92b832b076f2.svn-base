@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hanson.mapper.AnnounceMapper">
+ <sql id="where">
+   <where>
+      <if test="title != null">
+	   <![CDATA[ and title = #{title} ]]>
+	 </if>
+	 <if test="createUser !=null">
+	   <![CDATA[ and createUser = #{createUser} ]]>
+	 </if>
+	 <if test="announcetype!=null ">
+	   <![CDATA[ and announcetype = #{announcetype} ]]>
+	 </if>
+   </where>
+ </sql>
+ <sql id="page_sort">
+  <if test="ORDER_BY_MENU!=null">
+			<choose>
+				<when test="ORDER_BY_DESC!=null">
+		 			<![CDATA[ order by ${ORDER_BY_MENU} ${ORDER_BY_DESC}]]>
+				</when>
+				<otherwise>
+					<![CDATA[ order by ${ORDER_BY_MENU}]]>
+				</otherwise>
+			</choose>
+		</if>
+ </sql>
+ <insert id="insertAnnounce" parameterType="com.hanson.model.Announce" useGeneratedKeys="true" keyProperty="id">
+   insert into store_announce
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+     <if test="title != null"> 
+      title,
+     </if>
+     <if test="announcetype !=null">
+       announcetype,
+     </if>
+     <if test="bannerurl !=null">
+      bannerurl,
+     </if>
+     <if test="recommend!=null">
+     recommend,
+     </if>
+     <if test="sort!=null">
+      sort,
+     </if>
+     <if test="createtime!=null">
+     createtime,
+     </if>
+     <if test="createUser!=null">
+     createUser,
+     </if>
+     <if test="msgdetailurl !=null">
+      msgdetailurl,
+     </if>
+    </trim>
+   <trim prefix="values (" suffix=")" suffixOverrides=",">  
+     <if test="title != null">
+      #{title,jdbcType=VARCHAR},
+     </if>
+     <if test="announcetype !=null">
+      #{announcetype,jdbcType=INTEGER},
+     </if>
+     <if test="bannerurl !=null">
+      #{bannerurl,jdbcType=VARCHAR},
+     </if>
+     <if test="recommend != null">
+      #{recommend,jdbcType=INTEGER},
+     </if>
+     <if test="profile != null">
+      #{profile,jdbcType=VARCHAR},
+     </if>
+     <if test="sort != null">
+      #{sort,jdbcType=INTEGER},
+     </if>
+     <if test="createtime !=null">
+     #{createtime,jdbcType=TIMESTAMP},
+     </if>
+     <if test="createUser !=null">
+      #{createUser,jdbcType=VARCHAR},
+     </if>
+     <if test="msgdetailurl !=null">
+      #{msgdetailurl,jdbcType=VARCHAR},
+     </if>
+     </trim>
+ </insert>
+
+   <update id="RecommendSet" parameterType="com.hanson.model.Announce">
+     update store_announce set recommend=#{recommend} where id=#{id}
+   </update>
+   <update id="updatebean" parameterType="com.hanson.model.Announce">
+    update store_announce   
+    <trim prefix="set" suffixOverrides=",">
+     <if test="title !=null">
+      title=#{title},
+     </if>
+     <if test="announcetype !=null">
+      announcetype = #{announcetype},
+     </if>
+     <if test="bannerurl !=null">
+      bannerurl = #{bannerurl},
+     </if>
+     <if test="profile !=null">
+      profile = #{profile},
+     </if>
+     <if test="recommend !=null">
+       recommend = #{recommend},
+     </if>
+     <if test="msgdetailurl !=null">
+       msgdetailurl = #{msgdetailurl},
+     </if> 
+    </trim>
+      where id = #{id}
+   </update>
+   <select id="selectByName" parameterType="java.lang.String" resultType="com.hanson.model.Announce">
+      select * from store_announce 
+      <where>
+       <if test="title!=null">
+          AND title =#{title}
+       </if>
+      </where>
+   </select>
+   <select id="findAnnounce" parameterType="java.lang.String" resultType="com.hanson.model.Announce">
+    select * from store_announce 
+    <where> 
+        <if test = "title!=null ">
+            AND title like '${title}%'
+        </if>
+     </where>
+   </select>
+   <delete id="deletebean" parameterType="java.lang.Integer">
+     delete from store_announce where id=#{id}
+   </delete>
+   <select id="Querybyid" parameterType="java.lang.Integer" resultType="com.hanson.model.Announce">
+    select * from store_announce where id=#{id}
+   </select>
+   <select id="bannerList" resultType="com.hanson.model.Announce">
+   select id,title,announcetype,bannerurl,recommend,sort,createtime,createUser,msgdetailurl,profile 
+      from store_announce  WHERE bannerurl is not NULL and bannerurl != ''
+   </select>
+   <select id="searchAnnounce" parameterType="java.util.Map" resultType="java.util.HashMap">
+     select id,title,announcetype,bannerurl,recommend,sort,createtime,createUser,msgdetailurl,profile  
+      from store_announce 
+      <include refid="where" />
+	 <include refid="page_sort" />
+	 limit #{BEGIN_ROW},#{PAGE_SIZE}
+   </select>
+   <select id="selectcount" parameterType="java.util.Map" resultType="long">
+   select count(*) from store_announce 
+     <include refid="where" />
+	 <include refid="page_sort" />
+   </select>
+</mapper>

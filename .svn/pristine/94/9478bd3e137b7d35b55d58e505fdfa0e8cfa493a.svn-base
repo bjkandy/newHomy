@@ -1,0 +1,24 @@
+package com.hanson.service;
+
+import java.util.List;
+import java.util.Map;
+
+import com.hanson.common.util.Page;
+import com.hanson.model.ServiceProject;
+
+public interface YuyueService {
+	public List<ServiceProject> getYuyue( );
+	//根据约拍项目名，查找是否存在
+	public  ServiceProject Selectprojectname(String projectname);
+    //录入约拍项目
+	public Integer saveyuepaiProject(ServiceProject model);
+	
+	public Integer  ReviseServiceProject(ServiceProject model);
+	
+	public Page<Map<String,Object>> FindyupaiProducts(Page<Map<String,Object>> page,Map<String,Object> map);
+	
+	public Integer DeleteServiceProject(Long id);
+	
+	public ServiceProject FindServiceProject(Long id);
+
+}

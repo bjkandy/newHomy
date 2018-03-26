@@ -1,0 +1,112 @@
+<link rel="stylesheet" type="text/css" href="css/table.css"/>
+<link rel="stylesheet" href="css/common.css" />
+<!--快速查询-->
+<div class="quick_search">
+	<span>商户编号:<input type="text"/></span>
+	<span>订单号:<input type="text"/></span>
+	<span>客户昵称:<input type="text"/></span>
+	<span>提现编号:<input type="text"/></span>
+	<span>订单日期:<input type="text"/>~<input type="text" /></span><br />
+	<span>订单状态:
+		<select name="">
+			<option value="">请选择</option>
+			<option value="">待支付</option>
+			<option value="">支付失败</option>
+			<option value="">支付成功</option>
+			<option value="">处理订单</option>
+			<option value="">无效订单</option>
+			<option value="">退款中</option>
+			<option value="">已关闭</option>
+			<option value="">已发货</option>
+		</select>
+	</span>
+	<span>提现状态:
+		<select name="">
+			<option value="">请选择</option>
+			<option value="">提现中</option>
+			<option value="">未提现</option>
+			<option value="">提现审核通过</option>
+			<option value="">提现成功</option>
+		</select>
+	</span>
+</div>
+<!--对表单进行操作-->
+<div class="from_handle">
+	<a href="#" style="display: none;"><b></b></a>
+	<a href="#"><b></b>查看</a>
+	<a href="#"><b></b>订单下载</a>
+	<a href="#"><b></b>订单生产完毕</a>
+	<a href="#"><b></b>订单已发货</a>
+	<a href="#"><b></b>订单退款</a>
+	<a href="#"><b></b>发起结算</a>
+	<a href="#"><b></b>导出excel</a>
+	<a href="#"><b></b>查询</a>
+	<a href="#"><b></b>重置</a>
+</div>
+<!--模态-录入-->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+  	<div class="modal-dialog" role="document">
+    	<div class="modal-content">
+      		<div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		        <h4 class="modal-title" id="myModalLabel">录入</h4>
+		    </div>
+		    <form action="" method="post"  class="form-horizontal">
+		    <div class="modal-body">
+				<div class="control-group">
+					<label class="control-label" for="inputCName">公司名称</label>
+					<div class="controls">
+					    <input type="text" id="inputCName" placeholder="公司名称">
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label" for="inputCName1">公司名称</label>
+					<div class="controls">
+					    <input type="text" id="inputCName1" placeholder="公司名称1">
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label" for="inputCName2">公司名称</label>
+					<div class="controls">
+					    <input type="text" id="inputCName2" placeholder="公司名称2">
+					</div>
+				</div>
+		    </div>				
+		  	<div class="modal-footer">
+		    	<button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+		    	<button type="submit" class="btn btn-primary">确定</button>
+		  	</div>
+		    </form>
+		</div>
+	</div>
+</div>
+<!--表单-->
+<table id="cs_table" class="datatable"></table>
+<script src="js/table.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+    var data = [];
+    for(var i=0;i<334;i++){
+        data[i] = {id:i+1,caozuo:"操作"+(i+1),qyid:"11111",name:"汇美微传",dengluming:"阿斯蒂芬",shengfen:"湖南省"};
+    }
+    var cs = new table({
+        "tableId":"cs_table",    //必须
+        "headers":["序号","操作","ID","公司名称","登录名","省份"],   //必须
+        "data":data,        //必须
+        "displayNum": 6,    //必须   默认 10
+        "groupDataNum":9  //可选    默认 10
+	});	
+	//点击表格添加active
+	$('#cs_table').on("click","td",function(){
+		console.log(this);
+		$(this).parent().addClass("active").siblings().removeClass("active");
+	})
+	$("#bianji").click(function(e){
+		console.log(this);
+		if($("#cs_table tr").hasClass("active")){
+			console.log($("#cs_table tr.active"));
+			$('#myModal').modal('show');
+		}else{
+			alert("1111");
+		}
+	})
+</script>

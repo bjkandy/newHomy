@@ -1,0 +1,44 @@
+.quick_search{
+	padding-left: 10px;
+	padding-top: 10px;
+}
+.quick_search>span{
+	margin-right: 10px;
+	font-size:18px;
+}
+.quick_search input,.quick_search select{
+	width: 120px;
+}
+/**************************************/
+.from_handle{
+	padding-bottom: 10px;
+	border-bottom: 1px solid #ddd;
+	overflow: hidden;
+}
+.from_handle b{
+	display: inline-block;
+	width: 20px;
+	height: 20px;
+	background: url(../img/glyphicons-halflings.png) no-repeat 0px -70px;
+	position: relative;
+	top: 5px;
+}
+.from_handle a{
+	color: #000000;
+	margin-left: 10px;
+}
+.from_handle>a:nth-last-child(2),.from_handle>a:last-child{
+	float: right;
+	padding: 0px 10px;
+	border: 1px solid #ddd;
+	border-radius:10px;
+}
+.from_handle>a:nth-last-child(2) b{
+	background-position: -47px 3px;
+}
+.from_handle>a:last-child b{
+	background-position: -238px -20px;
+}
+.from_handle>a:first-child b{
+	background-position: -405px -93px;
+}

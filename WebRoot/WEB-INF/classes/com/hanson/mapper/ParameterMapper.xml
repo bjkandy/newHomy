@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hanson.mapper.ParameterMapper">
+	<sql id="parameterSql">
+		id, pcid, pclass, pmcode, pmname, remark, valid, isfix, sortno
+	</sql>
+	
+	<!-- 查询参数信息 -->
+	<select id="findParameters" parameterType="com.hanson.model.Parameter" resultType="com.hanson.model.Parameter">
+		select  
+			<include refid="parameterSql"/>
+		from parameter
+		<where>
+		  1=1
+		  <if test="id != null">
+			AND id = #{id}  
+		  </if>
+		  <if test="pcid != null and pcid != '' ">
+		    and pcid = #{pcid}
+		  </if>
+		  <if test="pclass != null and pclass != ''">
+		    and pclass = #{pclass}
+		  </if>
+		  <if test="pmcode != null and pmcode != ''">
+		    and pmcode = #{pmcode}
+		  </if>
+		  <if test="pmname != null and pmname != ''">
+		    and pmname = #{pmname}
+		  </if>
+		  <if test="remark != null and remark != ''">
+		    and remark = #{remark}
+		  </if>
+		  <if test="valid != null">
+		    and valid = #{valid}
+		  </if>
+		  <if test="isfix != null">
+		    and isfix = #{isfix}
+		  </if>
+		  <if test="sortno != null">
+		    and sortno = #{sortno}
+		  </if>
+		</where>
+	</select>
+
+</mapper>

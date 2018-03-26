@@ -1,0 +1,911 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hanson.mapper.DataCenterMapper">
+
+<select id="merchantDataCount" resultType="String" parameterType="map">
+					SELECT
+					  count(de.id) as num	
+					  from
+						(SELECT
+							uc.id AS id
+						FROM   
+							u_company AS uc
+						LEFT JOIN sys_province AS syp ON(
+						    uc.province = syp.ID
+						)	
+						LEFT JOIN odr_order AS od ON (
+							(uc.id = od.merchantid
+							OR uc.id = od.distributorid
+							OR uc.id = od.prometerid
+							OR uc.id = od.qyid)
+							AND #{endTime} >= CONVERT (od.createdate, date)
+							AND CONVERT (od.createdate, date) >= #{startTime}
+						)
+						LEFT JOIN (
+							SELECT
+								usc.id AS id,
+								COUNT(1) AS userNumber,
+								sum(
+									CASE
+									WHEN (
+										CONVERT (usu.createtime, date) >= #{startTime}
+										AND #{endTime} >= CONVERT (usu.createtime, date)
+									) THEN
+										1
+									ELSE
+										0
+									END
+								) AS newUserNumber
+							FROM
+								u_company AS usc
+							LEFT JOIN u_seconduser AS usu ON (usc.id = usu.qyid)
+							WHERE
+									1 = 1
+								<if test="id != null and id != ''">
+							 		 AND usc.id = #{id}
+							    </if>
+							    <if test="companyname != null and companyname != ''">
+							   		  and usc.companyname like '${companyname}%'
+							    </if>
+							    <if test="companytype != null and companytype != ''">
+							  		  and usc.companytype= #{companytype}
+							    </if>
+									AND #{endTime} >= CONVERT (usu.createtime, date)
+									 group by usc.id
+						) AS u ON (uc.id = u.id)
+						WHERE
+									1=1
+					      		<if test="id != null and id != ''">
+							 		 AND uc.id = #{id}
+							    </if>
+							    <if test="companyname != null and companyname != ''">
+							   		  and uc.companyname like '${companyname}%'
+							    </if>
+							    <if test="companytype != null and companytype != ''">
+							  		  and uc.companytype= #{companytype}
+							    </if>
+							GROUP BY
+								uc.id) as de
+
+	</select>
+	
+	<select id="merchantData" resultType="map" parameterType="map">
+						SELECT
+							uc.id AS id,
+							uc.companyname AS companyname,
+							ifnull(u.userNumber,0) AS userNumber,
+							ifnull(u.newUserNumber,0) AS newUserNumber,
+							ifnull(COUNT(od.orderid),0) AS odrNumber,
+							ifnull(sum(
+								CASE od.paystatus
+								WHEN 10 THEN
+									1
+								ELSE
+									0
+								END
+							),0) AS payOdrNumber,
+							ifnull(SUM(od.totalprice),0) AS odrTotalPrice,
+							ifnull(sum(
+								CASE od.paystatus
+								WHEN 10 THEN
+									od.totalprice
+								ELSE
+									0
+								END
+							),0) AS payOdrTotalprice,
+							DATE_FORMAT(uc.createtime,'%Y-%m-%d %H:%i:%s') AS createdate,
+							uc.companytype AS companytype,
+							ifnull(syp.provincename,'') AS provincename,
+							ifnull(uc.mobile,'') AS mobile,
+							ifnull(uc.phone,'') AS phone
+						FROM   
+							u_company AS uc
+						LEFT JOIN sys_province AS syp ON(uc.province = syp.ID)	
+						LEFT JOIN odr_order AS od ON (
+							(uc.id = od.merchantid
+							OR uc.id = od.distributorid
+							OR uc.id = od.prometerid
+							OR uc.id = od.qyid)
+							AND #{endTime} >= CONVERT (od.createdate, date)
+							AND CONVERT (od.createdate, date) >= #{startTime}
+						)
+						LEFT JOIN (
+							SELECT
+								usc.id AS id,
+								COUNT(1) AS userNumber,
+								sum(
+									CASE
+									WHEN (
+										CONVERT (usu.createtime, date) >= #{startTime}
+										AND #{endTime} >= CONVERT (usu.createtime, date)
+									) THEN
+										1
+									ELSE
+										0
+									END
+								) AS newUserNumber
+							FROM
+								u_company AS usc
+							LEFT JOIN u_seconduser AS usu ON (usc.id = usu.qyid)
+							WHERE
+									1 = 1
+								<if test="id != null and id != ''">
+							 		 AND usc.id = #{id}
+							    </if>
+							    <if test="companyname != null and companyname != ''">
+							   		  and usc.companyname like '${companyname}%'
+							    </if>
+							    <if test="companytype != null and companytype != ''">
+							  		  and usc.companytype= #{companytype}
+							    </if>
+									AND #{endTime} >= CONVERT (usu.createtime, date)
+								   group by usc.id
+						) AS u ON (uc.id = u.id)
+						WHERE
+									1=1
+					      		<if test="id != null and id != ''">
+							 		 AND uc.id = #{id}
+							    </if>
+							    <if test="companyname != null and companyname != ''">
+							   		  and uc.companyname like '${companyname}%'
+							    </if>
+							    <if test="companytype != null and companytype != ''">
+							  		  and uc.companytype= #{companytype}
+							    </if>
+							GROUP BY
+								uc.id
+							 LIMIT #{startLin},#{pageSize}
+
+	</select>
+	
+	<select id="merchantDataAnalyzeCount" resultType="String" parameterType="map">
+				SELECT count(1) as num FROM (
+						
+						(
+							SELECT
+								a.datetime as datetime,
+								IFNULL(b.activeMerchandNumber,0) as activeMerchandNumber,
+								IFNULL(a.newMerchantNumber,0) as newMerchantNumber,
+								IFNULL(a.qyNumber,0) as qyNumber,
+								IFNULL(a.prometerNumber,0) as prometerNumber,
+								IFNULL(a.productNumber,0) as productNumber,
+								IFNULL(a.merchantNumber,0) as merchantNumber,
+								IFNULL(a.distributNumber,0) as distributNumber				
+							FROM
+								(
+									SELECT
+									   (case #{dateType}
+										   when 0 then DATE_FORMAT(uc.createtime, '%y-%m-%d') 
+										   else DATE_FORMAT(uc.createtime, '%y-%m') 
+										   end) as datetime,
+										COUNT(1) AS newMerchantNumber,
+										sum(
+											CASE uc.companytype
+											WHEN 30 THEN
+												1
+											ELSE
+												0
+											END
+										) AS qyNumber,
+										sum(
+											CASE uc.companytype
+											WHEN 20 THEN
+												1
+											ELSE
+												0
+											END
+										) AS prometerNumber,
+										sum(
+											CASE uc.companytype
+											WHEN 10 THEN
+												1
+											ELSE
+												0
+											END
+										) AS productNumber,
+										sum(
+											CASE uc.companytype
+											WHEN 40 THEN
+												1
+											ELSE
+												0
+											END
+										) AS distributNumber,
+										sum(
+											CASE uc.companytype
+											WHEN 50 THEN
+												1
+											ELSE
+												0
+											END
+										) AS merchantNumber
+									FROM
+										u_company AS uc
+									WHERE
+										CONVERT (uc.createtime, date) >= #{startTime}
+									AND #{endTime} >= CONVERT (uc.createtime, date)
+									GROUP BY
+										datetime
+									ORDER BY
+										datetime DESC
+								) AS a
+							LEFT JOIN (
+								SELECT
+									re.datetime AS datetime,
+									COUNT(re.id) AS activeMerchandNumber
+								FROM
+									(
+										(
+											SELECT DISTINCT
+												(case #{dateType}
+												   when 0 then DATE_FORMAT(us.createtime, '%y-%m-%d') 
+												   else DATE_FORMAT(us.createtime, '%y-%m') 
+												   end) as datetime,
+												u.id AS id
+											FROM
+												u_company AS u,
+												u_seconduser AS us
+											WHERE
+												u.id = us.qyid
+											AND CONVERT (us.createtime, date) >= #{startTime}
+											AND #{endTime} >= CONVERT (us.createtime, date)
+										)
+										UNION ALL
+											(
+												SELECT DISTINCT
+													(case #{dateType}
+													   when 0 then DATE_FORMAT(od.createdate, '%y-%m-%d') 
+													   else DATE_FORMAT(od.createdate, '%y-%m') 
+													   end) as datetime,
+													u.id AS id
+												FROM
+													u_company AS u,
+													odr_order AS od
+												WHERE
+													(
+														u.id = od.qyid
+														OR u.id = od.prometerid
+														OR u.id = od.merchantid
+														OR u.id = od.distributorid
+													)
+												AND CONVERT (od.createdate, date) >= #{startTime}
+												AND #{endTime} >= CONVERT (od.createdate, date)
+											)
+									) AS re
+								GROUP BY
+									re.datetime
+								ORDER BY
+									re.datetime DESC
+							) AS b ON (a.datetime = b.datetime)
+						)
+						
+						UNION
+						
+							(
+								SELECT
+									b.datetime as datetime,
+									ifnull(b.activeMerchandNumber,0) as activeMerchandNumber,
+									ifnull(a.newMerchantNumber,0) as newMerchantNumber,
+									ifnull(a.qyNumber,0) as qyNumber,
+									ifnull(a.prometerNumber,0) as prometerNumber,
+									ifnull(a.productNumber,0) as productNumber,
+									ifnull(a.merchantNumber,0) as merchantNumber,
+									ifnull(a.distributNumber,0) as distributNumber	
+								FROM
+									(
+										SELECT
+											(case #{dateType}
+											   when 0 then DATE_FORMAT(uc.createtime, '%y-%m-%d') 
+											   else DATE_FORMAT(uc.createtime, '%y-%m') 
+											   end) as datetime,
+											COUNT(1) AS newMerchantNumber,
+											sum(
+												CASE uc.companytype
+												WHEN 30 THEN
+													1
+												ELSE
+													0
+												END
+											) AS qyNumber,
+											sum(
+												CASE uc.companytype
+												WHEN 20 THEN
+													1
+												ELSE
+													0
+												END
+											) AS prometerNumber,
+											sum(
+												CASE uc.companytype
+												WHEN 10 THEN
+													1
+												ELSE
+													0
+												END
+											) AS productNumber,
+											sum(
+												CASE uc.companytype
+												WHEN 40 THEN
+													1
+												ELSE
+													0
+												END
+											) AS distributNumber,
+											sum(
+												CASE uc.companytype
+												WHEN 50 THEN
+													1
+												ELSE
+													0
+												END
+											) AS merchantNumber
+										FROM
+											u_company AS uc
+										WHERE
+											CONVERT (uc.createtime, date) >= #{startTime}
+										AND #{endTime} >= CONVERT (uc.createtime, date)
+										GROUP BY
+											datetime
+										ORDER BY
+											datetime DESC
+									) AS a
+								RIGHT JOIN (
+									SELECT
+										re.datetime AS datetime,
+										COUNT(re.id) AS activeMerchandNumber
+									FROM
+										(
+											(
+												SELECT DISTINCT
+													(case #{dateType}
+													   when 0 then DATE_FORMAT(us.createtime, '%y-%m-%d') 
+													   else DATE_FORMAT(us.createtime, '%y-%m') 
+													   end) as datetime,
+													u.id AS id
+												FROM
+													u_company AS u,
+													u_seconduser AS us
+												WHERE
+													u.id = us.qyid
+												AND CONVERT (us.createtime, date) >= #{startTime}
+												AND #{endTime} >= CONVERT (us.createtime, date)
+											)
+											UNION ALL
+												(
+													SELECT DISTINCT
+														(case #{dateType}
+														   when 0 then DATE_FORMAT(od.createdate, '%y-%m-%d') 
+														   else DATE_FORMAT(od.createdate, '%y-%m') 
+														   end) as datetime,
+														u.id AS id
+													FROM
+														u_company AS u,
+														odr_order AS od
+													WHERE
+														(
+															u.id = od.qyid
+															OR u.id = od.prometerid
+															OR u.id = od.merchantid
+															OR u.id = od.distributorid
+														)
+													AND CONVERT (od.createdate, date) >= #{startTime}
+													AND #{endTime} >= CONVERT (od.createdate, date)
+												)
+										) AS re
+									GROUP BY
+										re.datetime
+									ORDER BY
+										re.datetime DESC
+								) AS b ON (a.datetime = b.datetime)
+							)
+						
+						) as res ORDER BY
+										res.datetime DESC
+							
+	</select>
+	
+	
+	<select id="merchantDataAnalyze" resultType="map" parameterType="map">
+				SELECT * FROM (
+						
+						(
+							SELECT
+								a.datetime as datetime,
+								IFNULL(b.activeMerchandNumber,0) as activeMerchandNumber,
+								IFNULL(a.newMerchantNumber,0) as newMerchantNumber,
+								IFNULL(a.qyNumber,0) as qyNumber,
+								IFNULL(a.prometerNumber,0) as prometerNumber,
+								IFNULL(a.productNumber,0) as productNumber,
+								IFNULL(a.merchantNumber,0) as merchantNumber,
+								IFNULL(a.distributNumber,0) as distributNumber				
+							FROM
+								(
+									SELECT
+									   (case #{dateType}
+										   when 0 then DATE_FORMAT(uc.createtime, '%y-%m-%d') 
+										   else DATE_FORMAT(uc.createtime, '%y-%m') 
+										   end) as datetime,
+										COUNT(1) AS newMerchantNumber,
+										sum(
+											CASE uc.companytype
+											WHEN 30 THEN
+												1
+											ELSE
+												0
+											END
+										) AS qyNumber,
+										sum(
+											CASE uc.companytype
+											WHEN 20 THEN
+												1
+											ELSE
+												0
+											END
+										) AS prometerNumber,
+										sum(
+											CASE uc.companytype
+											WHEN 10 THEN
+												1
+											ELSE
+												0
+											END
+										) AS productNumber,
+										sum(
+											CASE uc.companytype
+											WHEN 40 THEN
+												1
+											ELSE
+												0
+											END
+										) AS distributNumber,
+										sum(
+											CASE uc.companytype
+											WHEN 50 THEN
+												1
+											ELSE
+												0
+											END
+										) AS merchantNumber
+									FROM
+										u_company AS uc
+									WHERE
+											CONVERT (uc.createtime, date) >= #{startTime}
+										AND #{endTime} >= CONVERT (uc.createtime, date)
+									GROUP BY
+										datetime
+									ORDER BY
+										datetime DESC
+								) AS a
+							LEFT JOIN (
+								SELECT
+									re.datetime AS datetime,
+									COUNT(DISTINCT re.id) AS activeMerchandNumber
+								FROM
+									(
+										(
+											SELECT DISTINCT
+												(case #{dateType}
+												   when 0 then DATE_FORMAT(us.createtime, '%y-%m-%d') 
+												   else DATE_FORMAT(us.createtime, '%y-%m') 
+												   end) as datetime,
+												u.id AS id
+											FROM
+												u_company AS u,
+												u_seconduser AS us
+											WHERE
+												u.id = us.qyid
+											AND CONVERT (us.createtime, date) >= #{startTime}
+											AND #{endTime} >= CONVERT (us.createtime, date)
+										)
+										UNION ALL
+											(
+												SELECT DISTINCT
+													(case #{dateType}
+													   when 0 then DATE_FORMAT(od.createdate, '%y-%m-%d') 
+													   else DATE_FORMAT(od.createdate, '%y-%m') 
+													   end) as datetime,
+													u.id AS id
+												FROM
+													u_company AS u,
+													odr_order AS od
+												WHERE
+													(
+														u.id = od.qyid
+														OR u.id = od.prometerid
+														OR u.id = od.merchantid
+														OR u.id = od.distributorid
+													)
+												AND CONVERT (od.createdate, date) >= #{startTime}
+												AND #{endTime} >= CONVERT (od.createdate, date)
+											)
+									) AS re
+								GROUP BY
+									re.datetime
+								ORDER BY
+									re.datetime DESC
+							) AS b ON (a.datetime = b.datetime)
+						)
+						
+						UNION
+						
+							(
+								SELECT
+									b.datetime as datetime,
+									ifnull(b.activeMerchandNumber,0) as activeMerchandNumber,
+									ifnull(a.newMerchantNumber,0) as newMerchantNumber,
+									ifnull(a.qyNumber,0) as qyNumber,
+									ifnull(a.prometerNumber,0) as prometerNumber,
+									ifnull(a.productNumber,0) as productNumber,
+									ifnull(a.merchantNumber,0) as merchantNumber,
+									ifnull(a.distributNumber,0) as distributNumber	
+								FROM
+									(
+										SELECT
+											(case #{dateType}
+											   when 0 then DATE_FORMAT(uc.createtime, '%y-%m-%d') 
+											   else DATE_FORMAT(uc.createtime, '%y-%m') 
+											   end) as datetime,
+											COUNT(1) AS newMerchantNumber,
+											sum(
+												CASE uc.companytype
+												WHEN 30 THEN
+													1
+												ELSE
+													0
+												END
+											) AS qyNumber,
+											sum(
+												CASE uc.companytype
+												WHEN 20 THEN
+													1
+												ELSE
+													0
+												END
+											) AS prometerNumber,
+											sum(
+												CASE uc.companytype
+												WHEN 10 THEN
+													1
+												ELSE
+													0
+												END
+											) AS productNumber,
+											sum(
+												CASE uc.companytype
+												WHEN 40 THEN
+													1
+												ELSE
+													0
+												END
+											) AS distributNumber,
+											sum(
+												CASE uc.companytype
+												WHEN 50 THEN
+													1
+												ELSE
+													0
+												END
+											) AS merchantNumber
+										FROM
+											u_company AS uc
+										WHERE
+												CONVERT (uc.createtime, date) >= #{startTime}
+											AND #{endTime} >= CONVERT (uc.createtime, date)
+										GROUP BY
+											datetime
+										ORDER BY
+											datetime DESC
+									) AS a
+								RIGHT JOIN (
+									SELECT
+										re.datetime AS datetime,
+										COUNT(DISTINCT re.id) AS activeMerchandNumber
+									FROM
+										(
+											(
+												SELECT DISTINCT
+													(case #{dateType}
+													   when 0 then DATE_FORMAT(us.createtime, '%y-%m-%d') 
+													   else DATE_FORMAT(us.createtime, '%y-%m') 
+													   end) as datetime,
+													u.id AS id
+												FROM
+													u_company AS u,
+													u_seconduser AS us
+												WHERE
+													u.id = us.qyid
+												AND CONVERT (us.createtime, date) >= #{startTime}
+												AND #{endTime} >= CONVERT (us.createtime, date)
+											)
+											UNION ALL
+												(
+													SELECT DISTINCT
+														(case #{dateType}
+														   when 0 then DATE_FORMAT(od.createdate, '%y-%m-%d') 
+														   else DATE_FORMAT(od.createdate, '%y-%m') 
+														   end) as datetime,
+														u.id AS id
+													FROM
+														u_company AS u,
+														odr_order AS od
+													WHERE
+														(
+															u.id = od.qyid
+															OR u.id = od.prometerid
+															OR u.id = od.merchantid
+															OR u.id = od.distributorid
+														)
+													AND CONVERT (od.createdate, date) >= #{startTime}
+													AND #{endTime} >= CONVERT (od.createdate, date)
+												)
+										) AS re
+									GROUP BY
+										re.datetime
+									ORDER BY
+										re.datetime DESC
+								) AS b ON (a.datetime = b.datetime)
+							)
+						
+						) as res ORDER BY
+										res.datetime DESC
+										LIMIT #{startLin},#{pageSize}
+							
+	</select>
+	<select id="merchantDataAnalyzeExcel" resultType="map" parameterType="map">
+				SELECT * FROM (
+						
+						(
+							SELECT
+								a.datetime as datetime,
+								IFNULL(b.activeMerchandNumber,0) as activeMerchandNumber,
+								IFNULL(a.newMerchantNumber,0) as newMerchantNumber,
+								IFNULL(a.qyNumber,0) as qyNumber,
+								IFNULL(a.prometerNumber,0) as prometerNumber,
+								IFNULL(a.productNumber,0) as productNumber,
+								IFNULL(a.merchantNumber,0) as merchantNumber,
+								IFNULL(a.distributNumber,0) as distributNumber				
+							FROM
+								(
+									SELECT
+									   (case #{dateType}
+										   when 0 then DATE_FORMAT(uc.createtime, '%y-%m-%d') 
+										   else DATE_FORMAT(uc.createtime, '%y-%m') 
+										   end) as datetime,
+										COUNT(1) AS newMerchantNumber,
+										sum(
+											CASE uc.companytype
+											WHEN 30 THEN
+												1
+											ELSE
+												0
+											END
+										) AS qyNumber,
+										sum(
+											CASE uc.companytype
+											WHEN 20 THEN
+												1
+											ELSE
+												0
+											END
+										) AS prometerNumber,
+										sum(
+											CASE uc.companytype
+											WHEN 10 THEN
+												1
+											ELSE
+												0
+											END
+										) AS productNumber,
+										sum(
+											CASE uc.companytype
+											WHEN 40 THEN
+												1
+											ELSE
+												0
+											END
+										) AS distributNumber,
+										sum(
+											CASE uc.companytype
+											WHEN 50 THEN
+												1
+											ELSE
+												0
+											END
+										) AS merchantNumber
+									FROM
+										u_company AS uc
+									WHERE
+											CONVERT (uc.createtime, date) >= #{startTime}
+										AND #{endTime} >= CONVERT (uc.createtime, date)
+									GROUP BY
+										datetime
+									ORDER BY
+										datetime DESC
+								) AS a
+							LEFT JOIN (
+								SELECT
+									re.datetime AS datetime,
+									COUNT(re.id) AS activeMerchandNumber
+								FROM
+									(
+										(
+											SELECT DISTINCT
+												(case #{dateType}
+												   when 0 then DATE_FORMAT(us.createtime, '%y-%m-%d') 
+												   else DATE_FORMAT(us.createtime, '%y-%m') 
+												   end) as datetime,
+												u.id AS id
+											FROM
+												u_company AS u,
+												u_seconduser AS us
+											WHERE
+												u.id = us.qyid
+											AND CONVERT (us.createtime, date) >= #{startTime}
+											AND #{endTime} >= CONVERT (us.createtime, date)
+										)
+										UNION ALL
+											(
+												SELECT DISTINCT
+													(case #{dateType}
+													   when 0 then DATE_FORMAT(od.createdate, '%y-%m-%d') 
+													   else DATE_FORMAT(od.createdate, '%y-%m') 
+													   end) as datetime,
+													u.id AS id
+												FROM
+													u_company AS u,
+													odr_order AS od
+												WHERE
+													(
+														u.id = od.qyid
+														OR u.id = od.prometerid
+														OR u.id = od.merchantid
+														OR u.id = od.distributorid
+													)
+												AND CONVERT (od.createdate, date) >= #{startTime}
+												AND #{endTime} >= CONVERT (od.createdate, date)
+											)
+									) AS re
+								GROUP BY
+									re.datetime
+								ORDER BY
+									re.datetime DESC
+							) AS b ON (a.datetime = b.datetime)
+						)
+						
+						UNION
+						
+							(
+								SELECT
+									b.datetime as datetime,
+									ifnull(b.activeMerchandNumber,0) as activeMerchandNumber,
+									ifnull(a.newMerchantNumber,0) as newMerchantNumber,
+									ifnull(a.qyNumber,0) as qyNumber,
+									ifnull(a.prometerNumber,0) as prometerNumber,
+									ifnull(a.productNumber,0) as productNumber,
+									ifnull(a.merchantNumber,0) as merchantNumber,
+									ifnull(a.distributNumber,0) as distributNumber	
+								FROM
+									(
+										SELECT
+											(case #{dateType}
+											   when 0 then DATE_FORMAT(uc.createtime, '%y-%m-%d') 
+											   else DATE_FORMAT(uc.createtime, '%y-%m') 
+											   end) as datetime,
+											COUNT(1) AS newMerchantNumber,
+											sum(
+												CASE uc.companytype
+												WHEN 30 THEN
+													1
+												ELSE
+													0
+												END
+											) AS qyNumber,
+											sum(
+												CASE uc.companytype
+												WHEN 20 THEN
+													1
+												ELSE
+													0
+												END
+											) AS prometerNumber,
+											sum(
+												CASE uc.companytype
+												WHEN 10 THEN
+													1
+												ELSE
+													0
+												END
+											) AS productNumber,
+											sum(
+												CASE uc.companytype
+												WHEN 40 THEN
+													1
+												ELSE
+													0
+												END
+											) AS distributNumber,
+											sum(
+												CASE uc.companytype
+												WHEN 50 THEN
+													1
+												ELSE
+													0
+												END
+											) AS merchantNumber
+										FROM
+											u_company AS uc
+										WHERE
+												CONVERT (uc.createtime, date) >= #{startTime}
+											AND #{endTime} >= CONVERT (uc.createtime, date)
+										GROUP BY
+											datetime
+										ORDER BY
+											datetime DESC
+									) AS a
+								RIGHT JOIN (
+									SELECT
+										re.datetime AS datetime,
+										COUNT(re.id) AS activeMerchandNumber
+									FROM
+										(
+											(
+												SELECT DISTINCT
+													(case #{dateType}
+													   when 0 then DATE_FORMAT(us.createtime, '%y-%m-%d') 
+													   else DATE_FORMAT(us.createtime, '%y-%m') 
+													   end) as datetime,
+													u.id AS id
+												FROM
+													u_company AS u,
+													u_seconduser AS us
+												WHERE
+													u.id = us.qyid
+												AND CONVERT (us.createtime, date) >= #{startTime}
+												AND #{endTime} >= CONVERT (us.createtime, date)
+											)
+											UNION ALL
+												(
+													SELECT DISTINCT
+														(case #{dateType}
+														   when 0 then DATE_FORMAT(od.createdate, '%y-%m-%d') 
+														   else DATE_FORMAT(od.createdate, '%y-%m') 
+														   end) as datetime,
+														u.id AS id
+													FROM
+														u_company AS u,
+														odr_order AS od
+													WHERE
+														(
+															u.id = od.qyid
+															OR u.id = od.prometerid
+															OR u.id = od.merchantid
+															OR u.id = od.distributorid
+														)
+													AND CONVERT (od.createdate, date) >= #{startTime}
+													AND #{endTime} >= CONVERT (od.createdate, date)
+												)
+										) AS re
+									GROUP BY
+										re.datetime
+									ORDER BY
+										re.datetime DESC
+								) AS b ON (a.datetime = b.datetime)
+							)
+						
+						) as res ORDER BY
+										res.datetime DESC
+							
+	</select>
+	
+	<select id="oldMerchantNumber" resultType="String" parameterType="map">
+				SELECT
+					COUNT(1) AS merchantNumber
+				FROM
+					u_company AS uc
+				WHERE
+					#{startTime} >= CONVERT (uc.createtime, date);
+	</select>
+	
+	
+	
+	</mapper>

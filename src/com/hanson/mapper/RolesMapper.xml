@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hanson.mapper.RolesMapper">
+	<!-- 查询角色 -->
+	<select id="findRoles" resultType="com.hanson.model.Roles">
+		select 
+			id, 
+			name 
+		from roles
+		<where>
+		  1=1
+		  <if test="id != null">
+			AND id = #{id}  
+		  </if>
+		  <if test="name != null">
+		    <![CDATA[ and name like CONCAT('%',#{name},'%') ]]> 
+		  </if>
+		</where>
+	</select>
+	
+	<!-- 保存角色 -->
+	<insert id="saveRoles" parameterType="com.hanson.model.Roles">
+		insert into roles (name) values (#{name})
+	</insert>
+	
+	<!-- 根据ID查询角色 -->
+	<select id="findRolesById" parameterType="com.hanson.model.Roles" resultType="com.hanson.model.Roles">
+		select 
+			id, 
+			name 
+		from roles
+		where id = #{id}
+	</select>
+	
+	<!-- 编辑角色 -->
+	<update id="updateRolese" parameterType="com.hanson.model.Roles">
+		update roles set name = #{name} where id = #{id}
+	</update>
+	
+	<!-- 根据ID删除角色 -->
+	<delete id="deleteRolesById" parameterType="com.hanson.model.Roles">
+		delete from roles where id = #{id}
+	</delete>
+	
+	<!-- 获得角色下的权限 -->
+	<select id="findAuthorities" parameterType="com.hanson.model.Roles" resultType="com.hanson.model.Authorities"> 
+		select authority_id id from roles_authorities t where t.role_id = #{id}
+	</select>
+	
+	<!-- 根据ID删除角色 -->
+	<delete id="deleteRolesAuthorities" parameterType="com.hanson.model.Roles">
+		delete from roles_authorities  where role_id = #{id}
+	</delete>
+	
+	<!-- 批量保存角色权限 -->
+	<insert id="saveRolesAuthorities" parameterType="java.util.List">
+		insert into roles_authorities (role_id, authority_id) values
+		<foreach collection="list" item="item" index="index" separator=",">
+            (#{item.role_id}, #{item.authority_id})
+        </foreach>
+	</insert>
+	
+</mapper>

@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hanson.mapper.CommentMapper">
+
+	<select id="getCommentCount" parameterType="Map" resultType="java.lang.Integer">
+		SELECT
+		count(*)
+		FROM
+		comment_table a
+		inner JOIN pdt_product b
+		ON a.productid = b.`ID`
+		<if test="goods!=null and goods.trim()!=&quot;&quot;">
+			and b.producttype=#{goods}
+		</if>
+		<if test="tradeName!=null and tradeName.trim()!=&quot;&quot;">
+			and b.name=#{tradeName}
+		</if>
+		<if test="evaluation!=null and evaluation.trim()!=&quot;&quot;">
+			and a.content like  CONCAT('%','${evaluation}','%') 
+		</if>
+		<if test="nickname!=null and nickname.trim()!=&quot;&quot;">
+			and a.nickname=#{nickname}
+		</if>
+		<if
+			test="evaluationTimeFrom!=null and evaluationTimeFrom.trim()!=&quot;&quot;">
+			and a.`createtime`>=#{evaluationTimeFrom,jdbcType=TIMESTAMP}
+		</if>
+		<if test="evaluationTimeTo!=null and evaluationTimeTo.trim()!=&quot;&quot;">
+			and a.`createtime`<![CDATA[<=#{evaluationTimeTo,jdbcType=TIMESTAMP}]]>
+		</if>
+		<if test="start!=null and start=='差评'">
+			and a.`starlevel`<![CDATA[<=2]]>
+		</if>
+		<if test="start!=null and start=='中评'">
+			and a.`starlevel`=3
+		</if>
+		<if test="start!=null and start=='好评'">
+			and a.`starlevel`>=4
+		</if>
+		inner JOIN
+		u_company c
+		ON a.qyid = c.id
+		<if test="merchants!=null and merchants.trim()!=&quot;&quot;">
+			and c.companyname=#{merchants}
+		</if>
+		INNER JOIN
+		odr_orderdetail d ON a.`orderdetailid`=d.id
+		INNER JOIN
+		pdt_specvalue e
+		ON a.`productid` = d.`productid` AND d.specid=e.id
+		AND a.`flag`=0
+		AND a.commentflag=0
+	</select>
+
+
+	<select id="getPageList" parameterType="Map" resultType="HashMap">
+		SELECT
+		a.`id`,
+		a.`content`,
+		a.`orderid`,
+		a.`nickname`,
+		a.`createtime`,
+		a.`nod`,
+		a.`starlevel`,
+		a.`ishide`,
+		a.`replystatus`,
+		a.`commenttab`,
+		a.`rcontent`,
+		b.`name`,
+		b.`producttype`,
+		c.`companyname`,
+		d.`proimg`,
+		e.`size`,
+		e.`color`
+		FROM
+		comment_table a
+		inner JOIN pdt_product b
+		ON a.productid = b.`ID`
+		<if test="goods!=null and goods.trim()!=&quot;&quot;">
+			and b.producttype=#{goods}
+		</if>
+		<if test="tradeName!=null and tradeName.trim()!=&quot;&quot;">
+			and b.name=#{tradeName}
+		</if>
+		<if test="evaluation!=null and evaluation.trim()!=&quot;&quot;">
+			and a.content like CONCAT('%','${evaluation}','%') 
+		</if>
+		<if test="nickname!=null and nickname.trim()!=&quot;&quot;">
+			and a.nickname=#{nickname}
+		</if>
+		<if
+			test="evaluationTimeFrom!=null and evaluationTimeFrom.trim()!=&quot;&quot;">
+			and a.`createtime`>=#{evaluationTimeFrom,jdbcType=TIMESTAMP}
+		</if>
+		<if test="evaluationTimeTo!=null and evaluationTimeTo.trim()!=&quot;&quot;">
+			and a.`createtime`<![CDATA[<=#{evaluationTimeTo,jdbcType=TIMESTAMP}]]>
+		</if>
+		<if test="start!=null and start=='差评'">
+			and a.`starlevel`<![CDATA[<=2]]>
+		</if>
+		<if test="start!=null and start=='中评'">
+			and a.`starlevel`=3
+		</if>
+		<if test="start!=null and start=='好评'">
+			and a.`starlevel`>=4
+		</if>
+		inner JOIN
+		u_company c
+		ON a.qyid = c.id
+		<if test="merchants!=null and merchants.trim()!=&quot;&quot;">
+			and c.companyname=#{merchants}
+		</if>
+		INNER JOIN
+		odr_orderdetail d ON a.`orderdetailid`=d.id
+		INNER JOIN
+		pdt_specvalue e
+		ON a.`productid` = d.`productid` AND d.specid=e.id
+		AND a.`flag`=0
+		AND a.commentflag=0
+		LIMIT
+		#{BEGIN_ROW},#{PAGE_SIZE}
+	</select>
+
+      <!--显示评价-->
+      <update id="showComment" parameterType="java.lang.Integer">
+          UPDATE comment_table SET ishide=0 WHERE id=#{id}
+      </update>
+      
+      <!--隐藏评价-->
+      <update id="hideComment" parameterType="java.lang.Integer">
+          UPDATE comment_table SET ishide=1 WHERE id=#{id}
+      </update>
+
+      <!--删除评价-->
+      <update id="deleteComment" parameterType="java.lang.Integer">
+          UPDATE comment_table SET flag=1 WHERE id=#{id}
+      </update>
+
+
+	<select id="getCommentDetial" parameterType="java.lang.Integer"
+		resultType="Map">
+		SELECT
+		a.`id`,
+		a.`ishide`,
+		a.`rcontent`,
+		a.`content`,
+		a.orderid,
+		a.`nickname`,
+		a.`createtime`,
+		a.`nod`,
+		a.`starlevel`,
+		a.`commenttab`,
+		a.`picture`,
+		b.`content` as additionalComments,
+		b.`picture` as additionalPicture,
+		e.`size`,
+		e.`color`
+		FROM
+		comment_table a left join comment_table b on b.commentid=a.id 
+		INNER JOIN
+		odr_orderdetail d ON a.`orderdetailid`=d.id
+		INNER JOIN
+		pdt_specvalue e
+		ON a.`productid` = d.`productid` AND d.specid=e.id
+		and a.`id`=#{id} LIMIT 0,1
+	</select> 
+</mapper>

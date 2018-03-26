@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hanson.mapper.ServiceprojectCompanyMapper">
+	
+	 <select id="findListByQyid" resultType="com.hanson.model.ServiceprojectCompany" parameterType="java.lang.Integer">
+		 select * from  yy_serviceproject_company where qyid = #{qyid}
+	</select>
+	
+	<!-- 插入-对象 -->
+  	<insert id="SaveprojectCompany" parameterType="com.hanson.model.ServiceprojectCompany" useGeneratedKeys="true" keyProperty="id">
+            INSERT INTO yy_serviceproject_company  
+            <trim prefix="(" suffix=")" suffixOverrides=",">  
+                <if test="projectid != null">  
+                    projectid,  
+                </if>  
+                <if test="qyid != null">  
+                    qyid,  
+                </if>  
+                <if test="addproductmoney!=null">
+                  addproductmoney,
+                </if>
+                <if test="monthsalecount!=null">
+                  monthsalecount,
+                </if>
+                <if test="totalsale!=null">
+                    totalsale,
+                </if>
+                <if test="originalprice!=null">
+                   originalprice,
+                </if>
+                <if test="presentmoney!=null">
+                   presentmoney,
+                </if>
+            	 <if test="appointmentcount != null">  
+                    appointmentcount,  
+                </if> 
+                <if test="shootingtype!=null">
+                   shootingtype,
+                </if>
+                <if test="updownframestatus != null">  
+                   updownframestatus,  
+                </if>  
+                <if test="remarks != null">  
+                    remarks,  
+                </if> 
+                <if test="area!=null">
+                  area,
+                </if>
+               newdate, bdelete
+            </trim>  
+            <trim prefix="values (" suffix=")" suffixOverrides=",">  
+            	<if test="projectid != null"> 
+            		#{projectid,jdbcType=INTEGER},  
+                </if>  
+                <if test="qyid != null">  
+                    #{qyid,jdbcType=INTEGER},  
+                </if>  
+                <if test="addproductmoney != null">  
+                    #{addproductmoney,jdbcType=DOUBLE},
+                </if>  
+                <if test="monthsalecount != null">  
+                    #{monthsalecount,jdbcType=INTEGER},
+                </if>  
+                <if test="totalsale != null">  
+                    #{totalsale,jdbcType=INTEGER}, 
+                </if> 
+                 <if test="originalprice!=null">
+                   #{originalprice,jdbcType=DOUBLE},
+                 </if>
+                 <if test="presentmoney!=null">
+                   #{presentmoney,jdbcType=DOUBLE},
+                 </if>
+                 <if test="appointmentcount!=null">
+                   #{appointmentcount,jdbcType=INTEGER},
+                 </if>
+                 <if test="shootingtype!=null">
+                    #{shootingtype,jdbcType=INTEGER},
+                 </if>
+                <if test="updownframestatus != null">  
+                    #{updownframestatus,jdbcType=INTEGER}, 
+                </if>  
+                <if test="remarks != null">  
+                     #{remarks,jdbcType=VARCHAR},  
+                </if>  
+                <if test="area!=null">
+                  #{area,jdbcType=VARCHAR},
+                </if>
+                now(), 1
+            </trim>  
+    </insert>
+    
+    <delete id="deleteProjectCompany" parameterType="java.lang.Long">
+      delete from yy_serviceproject_company where projectid=#{projectid}
+    </delete>
+    
+    <select id="FindCompanyyuepaiList" parameterType="java.util.Map" resultType="java.util.Map">
+     select yy.id, yy.area,yy.projectid,yy.qyid,u.companyname,yy.presentmoney,yy.addproductmoney,yy.originalprice from yy_serviceproject_company as yy LEFT JOIN u_company as u
+       ON yy.qyid=u.id  
+       <where> 
+        
+      <if test="area!=null and area!=''">
+         AND yy.area=#{area}
+      </if>
+      <if test="qyid!=null and qyid!=''">
+         and yy.qyid=#{qyid}
+      </if>
+      <if test="projectid!=null and projectid!=''">
+         and yy.projectid=#{projectid}
+      </if>
+      </where>
+    </select>
+    <select id="GetOneProject" parameterType="java.util.Map" resultType="com.hanson.model.ServiceprojectCompany">
+      select * from yy_serviceproject_company where qyid=#{qyid} and projectid=#{projectid}
+    </select>
+    <update id="modifyprice" parameterType="java.util.Map">
+       UPDATE yy_serviceproject_company
+       <trim prefix="set" suffixOverrides=",">
+       <if test="originalprice!=null">
+          originalprice=#{originalprice},
+       </if>
+        <if test="addproductmoney!=null">
+           addproductmoney = #{addproductmoney},
+         </if>
+         <if test="presentmoney!=null">
+           presentmoney = #{presentmoney},
+         </if>
+       </trim>
+        where id=#{id}
+    </update>    
+    <update id="ModifyprojectCompany"  parameterType="com.hanson.model.ServiceprojectCompany">
+        UPDATE yy_serviceproject_company
+        <trim prefix="set" suffixOverrides=",">
+         <if test="projectid!=null">
+           projectid = #{projectid},
+         </if>
+         <if test="qyid!=null">
+           qyid = #{qyid},
+         </if>
+         <if test="addproductmoney!=null">
+           addproductmoney = #{addproductmoney},
+         </if>
+         <if test="monthsalecount!=null">
+           monthsalecount = #{monthsalecount},
+         </if>
+         <if test="totalsale!=null">
+            totalsale = #{totalsale},
+         </if>
+         <if test="originalprice!=null">
+            originalprice = #{originalprice},
+         </if>
+         <if test="presentmoney!=null">
+           presentmoney = #{presentmoney},
+         </if>
+         <if test="appointmentcount!=null">
+            appointmentcount = #{appointmentcount},
+         </if>
+         <if test="shootingtype!=null">
+            shootingtype = #{shootingtype},
+         </if>
+         <if test="updownframestatus!=null">
+            updownframestatus = #{updownframestatus},
+         </if>
+         <if test="remarks!=null">
+           remarks = #{remarks},
+         </if>
+         <if test="bdelete!=null">
+            bdelete = #{bdelete},
+         </if>
+         <if test="area!=null">
+           area=#{area},
+         </if>
+        </trim>
+         where id=#{id}
+    </update>
+</mapper>

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- container-fluid -->
+<head>
+    <title>汇美微传即时管理系统</title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="stylesheet" href="hanson/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="hanson/css/bootstrap-responsive.min.css"/>
+    <link rel="stylesheet" href="hanson/css/fullcalendar.css"/>
+    <link rel="stylesheet" href="hanson/css/uniform.css"/>
+    <link rel="stylesheet" href="hanson/css/select2.css"/>
+    <link rel="stylesheet" href="hanson/css/unicorn.main.css"/>
+    <link rel="stylesheet" href="hanson/css/unicorn.grey.css" class="skin-color"/>
+
+
+    <script src="hanson/js/excanvas.min.js"></script>
+    <script src="hanson/js/jquery.min.js"></script>
+    <script src="hanson/js/jquery.ui.custom.js"></script>
+    <script src="hanson/js/bootstrap.min.js"></script>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+</head>
+<body>
+<div id="header">
+    <h1 style="font-size: 18px;color: #fff;background:none;line-height: 30px;">汇美微传即时管理系统</h1>
+</div>
+<!-- 搜索 -->
+<!-- <div id="search">
+    <input type="text" placeholder="Search here..." /><button type="submit" class="tip-right" title="Search"><i class="icon-search icon-white"></i></button>
+</div> -->
+<div id="user-nav" class="navbar navbar-inverse">
+    <ul class="nav btn-group">
+        <!-- <li class="btn btn-inverse"><a title="" href="login.jsp"><i class="icon icon-user"></i> <span class="text">个人中心</span></a></li>
+        <li class="btn btn-inverse"><a title="" href="login.jsp"><i class="icon icon-cog"></i> <span class="text">设置</span></a></li> -->
+        <li class="btn btn-inverse"><a title="" href="main/signOut"><i class="icon icon-share-alt"></i> <span
+                class="text">退出登录</span></a></li>
+    </ul>
+</div>
+
+<div id="sidebar">
+    <ul>
+        <li class="active"><a href="main/index"><i class="icon icon-home"></i> <span>首页</span></a></li>
+        <!-- 根据当前用户权限展示导航菜单 -->
+
+        <li class="submenu">
+            <a href="login.jsp"><i class="icon icon-th-list"></i> <span>企业信息管理</span> <span class="label">4</span></a>
+
+            <ul>
+
+                <li><a href="/company/list.do">企业管理</a></li>
+
+                <li><a href="/merchantsort/list.do">商户增量数据统计</a></li>
+
+            </ul>
+
+        </li>
+
+        <li class="submenu">
+            <a href="login.jsp"><i class="icon icon-th-list"></i> <span>会员管理</span> <span class="label">4</span></a>
+
+            <ul>
+
+                <li><a href="/user/user.do">会员信息</a></li>
+
+            </ul>
+
+        </li>
+
+        <li class="submenu">
+            <a href="login.jsp"><i class="icon icon-th-list"></i> <span>订单管理</span> <span class="label">4</span></a>
+
+            <ul>
+
+                <li><a href="/order/order.do">订单管理</a></li>
+
+            </ul>
+
+        </li>
+
+        <li class="submenu">
+            <a href="login.jsp"><i class="icon icon-th-list"></i> <span>预约管理</span> <span class="label">4</span></a>
+
+            <ul>
+
+                <li><a href="/yuyue/yuyue.do">预约查看</a></li>
+
+            </ul>
+
+        </li>
+
+        <li class="submenu">
+            <a href="login.jsp"><i class="icon icon-th-list"></i> <span>返现管理</span> <span class="label">4</span></a>
+
+            <ul>
+
+                <li><a href="/txjs/txjs.do">返现管理</a></li>
+
+            </ul>
+
+        </li>
+
+        <li class="submenu">
+            <a href="login.jsp"><i class="icon icon-th-list"></i> <span>系统菜单</span> <span class="label">4</span></a>
+
+            <ul>
+
+                <li><a href="/system/users.do">用户管理</a></li>
+
+                <li><a href="/system/roles.do">角色管理</a></li>
+
+                <li><a href="/system/item.do">权限项管理</a></li>
+
+            </ul>
+
+        </li>
+
+    </ul>
+</div>
+<div id="content">
+
+    <link rel="stylesheet" href="hanson/css/bootstrap.css">
+
+    <link rel="stylesheet" href="hanson/css/common.css">
+    <link rel="stylesheet" type="text/css" href="hanson/css/table.css">
+    <link rel="stylesheet" href="hanson/css/select2.css">
+    <link rel="stylesheet" href="hanson/css/toastr.css">
+    <style>
+        .category-list .col-sm-3 {
+            padding: 30px;
+        }
+
+        .category-list .col-sm-3 a {
+            display: block;
+            border: 1px solid #e1e1e8;
+            line-height: 100px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 30px;
+            font-weight: 500;
+            color: #333;
+
+        }
+
+        .category-list .col-sm-3 a:hover {
+            border-color: #a2a2a2;
+            background-color: #a2a2a2;
+            color: #fff;
+        }
+    </style>
+
+    <div class="choose_publish_category container">
+
+        <h3 class="h2 ">发布商品</h3>
+
+        <div class="category-list text-center">
+            <div class="row">
+                <div class="col-sm-3">
+                    <a href="">照片冲印</a>
+                </div>
+                <div class="col-sm-3 ">
+                    <a href="">相框摆台</a>
+                </div>
+                <div class="col-sm-3 ">
+                    <a href="">相册/照片书</a>
+                </div>
+                <div class="col-sm-3 ">
+                    <a href="">LOMO卡</a>
+                </div>
+                <div class="col-sm-3 ">
+                    <a href="">工牌</a>
+                </div>
+                <div class="col-sm-3 ">
+                    <a href="">日历</a>
+                </div>
+                <div class="col-sm-3 ">
+                    <a href="">照片墙</a>
+                </div>
+                <div class="col-sm-3 ">
+                    <a href="">名片</a>
+                </div>
+            </div>
+        </div>
+        <!--<div class="text-center">-->
+            <!--<button class="btn btn-success ">下一步</button>-->
+        <!--</div>-->
+    </div>
+
+
+</div>
+</body>
+
+
+</html>
+
